@@ -1,0 +1,31 @@
+package io.gitlab.chaver.mining.patterns.measure.compute;
+
+import io.gitlab.chaver.mining.patterns.io.Database;
+import org.chocosolver.solver.Model;
+
+public class MaxValComputer extends AttributeMeasureComputer {
+
+    public MaxValComputer(Database database, Model model, int num) {
+        super(database, model, num);
+    }
+
+    @Override
+    public int getInitValue() {
+        return 0;
+    }
+
+    @Override
+    public void compute(int i) {
+        value.set(Math.max(getItemValue(i), value.get()));
+    }
+
+    @Override
+    public boolean isConstant(int i) {
+        return getItemValue(i) <= value.get();
+    }
+
+    @Override
+    public boolean isConstant(int i, int j) {
+        return getItemValue(i) <= Math.max(value.get(), getItemValue(j));
+    }
+}
