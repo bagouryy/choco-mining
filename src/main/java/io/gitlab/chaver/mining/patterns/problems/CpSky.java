@@ -16,10 +16,11 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.tools.ArrayUtils;
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
 import static io.gitlab.chaver.mining.patterns.measure.MeasureFactory.*;
 
-
+@Command(name = "cpsky", mixinStandardHelpOptions = true, description = "CP+SKY implementation")
 public class CpSky extends PatternProblem {
 
     private BoolVar[] transactions;
