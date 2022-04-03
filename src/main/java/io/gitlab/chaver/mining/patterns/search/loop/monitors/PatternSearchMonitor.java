@@ -40,9 +40,7 @@ public class PatternSearchMonitor implements IMonitorSolution {
         if (transactionGetter != null) p.setTransactions(transactionGetter.getTransactions());
         patterns.add(p);
         if (paretoMeasuresId.size() > 0) {
-            for (int i = patterns.size() - 2; i >= 0; i--) {
-                if (patterns.get(i).isDominatedBy(p, paretoMeasuresId.size())) patterns.remove(i);
-            }
+            patterns.removeIf(p2 -> p2.isDominatedBy(p, paretoMeasuresId.size()));
         }
     }
 }
