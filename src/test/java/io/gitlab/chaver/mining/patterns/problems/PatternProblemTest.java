@@ -82,7 +82,7 @@ public abstract class PatternProblemTest {
         if (patternType.equals("closed")) {
             args.addAll(Arrays.asList("--lmin", "0"));
         }
-        return args.toArray(String[]::new);
+        return args.stream().toArray(String[]::new);
     }
 
     private List<String> convertMeasureToString(String patternMeasures, String attributeMeasures) throws Exception {
