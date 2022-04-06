@@ -98,7 +98,7 @@ public abstract class PatternProblemTest {
         List<String> measures = convertMeasureToString(patternMeasures, attributeMeasures);
         List<Pattern> patterns = readPatterns(resourcesPath + datasetName + "/" + expectedResultsPath + ".txt", measures);
         PatternProblem problem = getProblem();
-        String[] args = getArgs(datasetName, patternMeasures, attributeMeasures, hasClasses, false, "closed");
+        String[] args = getArgs(datasetName, patternMeasures, attributeMeasures, hasClasses, wc, "closed");
         new CommandLine(problem).execute(args);
         testEqualsPatterns(patterns, problem.getSolutions());
     }
@@ -108,7 +108,7 @@ public abstract class PatternProblemTest {
         List<String> measures = convertMeasureToString(patternMeasures, attributeMeasures);
         List<Pattern> patterns = readPatterns(resourcesPath + datasetName + "/" + expectedResultsPath + ".txt", measures);
         PatternProblem problem = getProblem();
-        String[] args = getArgs(datasetName, patternMeasures, attributeMeasures, hasClasses, false, "sky");
+        String[] args = getArgs(datasetName, patternMeasures, attributeMeasures, hasClasses, wc, "sky");
         new CommandLine(problem).execute(args);
         testEqualsPatterns(patterns, problem.getSolutions());
     }
