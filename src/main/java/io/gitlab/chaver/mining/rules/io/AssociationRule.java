@@ -65,6 +65,7 @@ public class AssociationRule {
     }
 
     private String convertToString(int[] pattern) {
+        if (pattern.length == 0) return "{}";
         StringBuilder str = new StringBuilder("{").append(pattern[0]);
         for (int i = 1; i < pattern.length; i++) {
             str.append(", ").append(pattern[i]);

@@ -12,7 +12,6 @@ import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 import io.gitlab.chaver.mining.patterns.io.PatternProblemProperties;
-import io.gitlab.chaver.mining.patterns.util.RSparseBitSetFacade;
 import io.gitlab.chaver.mining.rules.io.ArMeasuresView;
 import io.gitlab.chaver.mining.rules.io.AssociationRule;
 import io.gitlab.chaver.mining.rules.search.loop.monitors.ArMonitor;
@@ -47,8 +46,6 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
     private boolean datFormat = true;
     @Option(names = {"--rt"}, description = "Rule type : ${COMPLETION-CANDIDATES} (default : ${DEFAULT-VALUE})")
     private RuleType ruleType = RuleType.ar;
-    // @Option(names = {"--bst"}, description = "BitSet type (classic or sparse, default : sparse)")
-    private String bitSetType = RSparseBitSetFacade.TYPE;
     @Option(names = "--fmin", description = "Min frequency of the rule (absolute value)")
     private int minFreq;
     @Option(names = "--rfmin", description = "Min frequency of the rule (relative value)")

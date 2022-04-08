@@ -14,22 +14,11 @@ import java.util.stream.IntStream;
  */
 public class RSparseBitSet {
 
-    /*
-     * BitSets are packed into arrays of "words."  Currently a word is
-     * a long, which consists of 64 bits, requiring 6 address bits.
-     * The choice of word size is determined purely by performance concerns.
-     */
-    private final static int ADDRESS_BITS_PER_WORD = 6;
-    private final static int BITS_PER_WORD = 1 << ADDRESS_BITS_PER_WORD;
-    private final static int BIT_INDEX_MASK = BITS_PER_WORD - 1;
-
     private IStateLong[] words;
     private int[] index;
     private IStateInt limit;
 
-    private long[] mask;
-    private int[] indexMask;
-    private int limitMask;
+    private SparseBitSet mask;
 
     /**
      * Instanciate a RSparseBitSet with nbits set to 1
@@ -37,9 +26,6 @@ public class RSparseBitSet {
      * @param nbits fixed number of bits to set to 1
      */
     public RSparseBitSet(Model model, int nbits) {
-        if (nbits < 1) {
-
-        }
         BitSet b = new BitSet(nbits);
         b.set(0, nbits);
         long[] wordsToCopy = b.toLongArray();
@@ -50,6 +36,7 @@ public class RSparseBitSet {
         }
         limit = model.getEnvironment().makeInt(size - 1);
         index = IntStream.range(0, size).toArray();
+        mask = new SparseBitSet();
     }
 
     /**
@@ -67,6 +54,7 @@ public class RSparseBitSet {
         for (int i = limit.get(); i >= 0 ; i--) {
             checkWord(index[i], i);
         }
+        mask = new SparseBitSet();
     }
 
     /**
@@ -91,12 +79,7 @@ public class RSparseBitSet {
     }
 
     public int maskCardinality() {
-        int sum = 0;
-        for (int i = 0; i <= limitMask; i++) {
-            int offset = indexMask[i];
-            sum += Long.bitCount(mask[offset]);
-        }
-        return sum;
+        return mask.cardinality();
     }
 
     /**
@@ -126,18 +109,11 @@ public class RSparseBitSet {
     }
 
     public void resetMask() {
-        mask = copyWords();
-        indexMask = index.clone();
-        limitMask = limit.get();
+        mask.reset(copyWords(), index.clone(), limit.get());
     }
 
     public void andMask(long[] m) {
-        for (int i = limitMask; i >= 0; i--) {
-            int offset = indexMask[i];
-            long w = mask[offset] & getValue(m, offset);
-            mask[offset] = w;
-            checkMask(offset, i);
-        }
+        mask.and(m);
     }
 
     private long[] copyWords() {
@@ -169,13 +145,7 @@ public class RSparseBitSet {
      * @return true if mask is a subset of m
      */
     public boolean maskIsSubsetOf(long[] m) {
-        for (int i = 0; i <= limitMask; i++) {
-            int offset = indexMask[i];
-            if ((~getValue(m, offset) & mask[offset]) != 0) {
-                return false;
-            }
-        }
-        return true;
+        return mask.isSubsetOf(m);
     }
 
     /**
@@ -203,14 +173,6 @@ public class RSparseBitSet {
         }
     }
 
-    private void checkMask(int offset, int i) {
-        if (mask[offset] == 0) {
-            indexMask[i] = indexMask[limitMask];
-            indexMask[limitMask] = offset;
-            limitMask--;
-        }
-    }
-
     @Override
     public String toString() {
         long[] wordVals = new long[words.length];
@@ -222,9 +184,5 @@ public class RSparseBitSet {
 
     public BitSet convertToBitset() {
         return BitSet.valueOf(copyWords());
-    }
-
-    public BitSet convertMaskToBitset() {
-        return BitSet.valueOf(mask);
     }
 }

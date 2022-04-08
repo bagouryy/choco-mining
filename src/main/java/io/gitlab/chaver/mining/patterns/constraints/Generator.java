@@ -3,6 +3,7 @@ package io.gitlab.chaver.mining.patterns.constraints;
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.util.BitSetFacade;
 import io.gitlab.chaver.mining.patterns.util.ConstraintSettings;
+import io.gitlab.chaver.mining.patterns.util.SparseBitSet;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -10,7 +11,6 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.events.IntEventType;
 import org.chocosolver.util.ESat;
 
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -20,16 +20,16 @@ import static io.gitlab.chaver.mining.patterns.util.BitSetFactory.getBitSet;
 
 /**
  * Given a set of boolean variables x, ensures that x is a generator
- * (i.e. there exists no item i \in x such that freq(x \ {i}) = freq(x)
+ * (i.e. there exists no item i \in x such that freq(x \ {i}) = freq(x))
  * Fore more information, see Belaid et al. - Constraint programming for association rules
  */
 public class Generator extends Propagator<BoolVar> {
 
     private final BoolVar[] items;
     private final Database database;
-    private final BitSet[] dataset;
+    private final long[][] dataset;
     private final BitSetFacade cover;
-    private final Map<Integer, BitSet> subCovers = new HashMap<>();
+    private final Map<Integer, SparseBitSet> subCovers = new HashMap<>();
     private final int[] freeItems;
     private final IStateInt lastIndexFree;
     private final int[] presentItems;
@@ -40,7 +40,7 @@ public class Generator extends Propagator<BoolVar> {
         super(items);
         this.items = items;
         this.database = database;
-        this.dataset = database.getVerticalRepresentation();
+        this.dataset = database.getDatasetAsLongArray();
         this.cover = getBitSet(ConstraintSettings.BITSET_TYPE, database, getModel());
         this.freeItems = IntStream.range(0, database.getNbItems()).toArray();
         this.lastIndexFree = getModel().getEnvironment().makeInt(items.length);
@@ -68,9 +68,8 @@ public class Generator extends Propagator<BoolVar> {
         int coverSize = cover.cardinality();
         for (int j = nPres - 1; j >= firstIndex ; j--) {
             int idx = presentItems[j];
-            if (!subCovers.containsKey(idx)) subCovers.put(idx, new BitSet(database.getNbTransactions()));
-            BitSet subCover = subCovers.get(idx);
-            subCover.set(0, database.getNbTransactions());
+            subCovers.put(idx, new SparseBitSet(database.getNbTransactions()));
+            SparseBitSet subCover = subCovers.get(idx);
             for (int i = nPres - 1; i >= firstIndex ; i--) {
                 if (j != i) {
                     int idx2 = presentItems[i];
@@ -97,9 +96,7 @@ public class Generator extends Propagator<BoolVar> {
             return true;
         }
         for (int j = firstIndex; j < nP; j++) {
-            BitSet subCover = (BitSet) subCovers.get(presentItems[j]).clone();
-            subCover.and(dataset[idx]);
-            if (subCover.cardinality() == intersectionSize) return true;
+            if (subCovers.get(presentItems[j]).andCount(dataset[idx]) == intersectionSize) return true;
         }
         return false;
     }
