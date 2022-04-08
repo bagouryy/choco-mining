@@ -5,7 +5,6 @@ import io.gitlab.chaver.mining.patterns.constraints.AdequateClosure;
 import io.gitlab.chaver.mining.patterns.constraints.AdequateClosureWC;
 import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
 import io.gitlab.chaver.mining.patterns.util.ClosedSkyTransactionGetter;
-import io.gitlab.chaver.mining.patterns.util.RSparseBitSetFacade;
 import io.gitlab.chaver.mining.patterns.util.TransactionGetter;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Settings;
@@ -25,7 +24,6 @@ public class ClosedSky extends PatternProblem {
     @Option(names = "--wc", description = "Use weak consistency version of AdequateClosure")
     private boolean wc;
 
-    private String bitsetType = RSparseBitSetFacade.TYPE;
     private CoverSize coverSize;
 
     @Override
@@ -33,7 +31,7 @@ public class ClosedSky extends PatternProblem {
         String freqId = freq().getId();
         IntVar freq = model.intVar(freqId, freqMin, database.getNbTransactions());
         measureVars.put(freqId, freq);
-        coverSize = new CoverSize(database, freq, items, bitsetType);
+        coverSize = new CoverSize(database, freq, items);
         new Constraint("CoverSize x", coverSize).post();
     }
 
@@ -42,7 +40,7 @@ public class ClosedSky extends PatternProblem {
         String freq1Id = freq1().getId();
         IntVar freq1 = model.intVar(freq1Id, 0, database.getNbTransactions());
         measureVars.put(freq1Id, freq1);
-        new Constraint("Freq 1", new CoverSize(database, freq1, items, bitsetType, true)).post();
+        new Constraint("Freq 1", new CoverSize(database, freq1, items, true)).post();
     }
 
     @Override

@@ -229,16 +229,16 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
             model.and(requiredItems.toArray(new BoolVar[0])).post();
         }*/
         IntVar freqZ = model.intVar("freqZ", minFreq, database.getNbTransactions());
-        new Constraint("frequent Z", new CoverSize(database, freqZ, z, bitSetType)).post();
+        new Constraint("frequent Z", new CoverSize(database, freqZ, z)).post();
         IntVar freqX = model.intVar("freqX", minFreq, database.getNbTransactions());
-        new Constraint("frequent X", new CoverSize(database, freqX, x, bitSetType)).post();
+        new Constraint("frequent X", new CoverSize(database, freqX, x)).post();
         if (minConf > 0) freqZ.mul(10000).ge(freqX.mul((int) Math.round(minConf * 10000))).post();
         IntVar freqY = model.intVar("freqY", minFreq, database.getNbTransactions());
-        new Constraint("frequent Y", new CoverSize(database, freqY, y, bitSetType)).post();
+        new Constraint("frequent Y", new CoverSize(database, freqY, y)).post();
         if (ruleType.equals(RuleType.mnr)) {
-            new Constraint("generator x", new Generator(x, database, bitSetType))
+            new Constraint("generator x", new Generator(x, database))
                     .post();
-            new Constraint("closed z", new CoverClosure(database, z, bitSetType)).post();
+            new Constraint("closed z", new CoverClosure(database, z)).post();
         }
         BoolVar[] skyVars = skypatternConstraint(y, z);
         BoolVar[] heuristicVars = ArrayUtils.append(skyVars, x, y, z);

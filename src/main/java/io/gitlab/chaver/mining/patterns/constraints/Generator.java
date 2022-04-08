@@ -2,6 +2,7 @@ package io.gitlab.chaver.mining.patterns.constraints;
 
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.util.BitSetFacade;
+import io.gitlab.chaver.mining.patterns.util.ConstraintSettings;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -35,12 +36,12 @@ public class Generator extends Propagator<BoolVar> {
     private final IStateInt lastIndexPresent;
     private final int firstIndex;
 
-    public Generator(BoolVar[] items, Database database, String bitSetType) {
+    public Generator(BoolVar[] items, Database database) {
         super(items);
         this.items = items;
         this.database = database;
         this.dataset = database.getVerticalRepresentation();
-        this.cover = getBitSet(bitSetType, database, getModel());
+        this.cover = getBitSet(ConstraintSettings.BITSET_TYPE, database, getModel());
         this.freeItems = IntStream.range(0, database.getNbItems()).toArray();
         this.lastIndexFree = getModel().getEnvironment().makeInt(items.length);
         this.firstIndex = database.getNbClass();

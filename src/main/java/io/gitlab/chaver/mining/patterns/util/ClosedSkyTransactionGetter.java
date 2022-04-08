@@ -10,6 +10,6 @@ public class ClosedSkyTransactionGetter implements TransactionGetter {
 
     @Override
     public int[] getTransactions() {
-        return coverSize.getCover().getWords().stream().toArray();
+        return coverSize.getCover().stream().toArray();
     }
 }

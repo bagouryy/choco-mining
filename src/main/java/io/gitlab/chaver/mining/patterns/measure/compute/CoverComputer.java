@@ -2,13 +2,13 @@ package io.gitlab.chaver.mining.patterns.measure.compute;
 
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.util.BitSetFacade;
-import io.gitlab.chaver.mining.patterns.util.RSparseBitSetFacade;
+import io.gitlab.chaver.mining.patterns.util.ConstraintSettings;
 import org.chocosolver.solver.Model;
 
 public abstract class CoverComputer extends MeasureComputer {
 
     private final BitSetFacade cover;
-    protected final String type = RSparseBitSetFacade.TYPE;
+    protected final String type = ConstraintSettings.BITSET_TYPE;
 
     public CoverComputer(Database database, Model model) {
         super(database);
@@ -34,7 +34,4 @@ public abstract class CoverComputer extends MeasureComputer {
         return cover.maskIsSubsetOf(i);
     }
 
-    public BitSetFacade getCover() {
-        return cover;
-    }
 }

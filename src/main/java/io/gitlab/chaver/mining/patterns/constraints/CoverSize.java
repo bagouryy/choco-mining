@@ -2,7 +2,7 @@ package io.gitlab.chaver.mining.patterns.constraints;
 
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.util.BitSetFacade;
-import lombok.Getter;
+import io.gitlab.chaver.mining.patterns.util.ConstraintSettings;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -11,6 +11,7 @@ import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.ESat;
 import org.chocosolver.util.tools.ArrayUtils;
 
+import java.util.BitSet;
 import java.util.stream.IntStream;
 
 import static io.gitlab.chaver.mining.patterns.util.BitSetFactory.*;
@@ -23,16 +24,15 @@ import static io.gitlab.chaver.mining.patterns.util.BitSetFactory.*;
 public class CoverSize extends Propagator<IntVar> {
 
     private final BoolVar[] items; // x
-    private final @Getter
-    BitSetFacade cover; // cover of x
+    private final BitSetFacade cover; // cover of x
     private final IntVar freq; // f
     private final int[] freeItems; // free items (i.e. not instanciated variables)
     private final IStateInt lastIndexFree; // all items between [firstIndex, lastIndexFree[ are free
     private final int firstIndex; // min index (= nb of classes of the database)
 
-    public CoverSize(Database database, IntVar freq, BoolVar[] items, String bitSetType) {
+    public CoverSize(Database database, IntVar freq, BoolVar[] items) {
         super(ArrayUtils.concat(items, freq));
-        cover = getBitSet(bitSetType, database, model);
+        cover = getBitSet(ConstraintSettings.BITSET_TYPE, database, model);
         this.freq = freq;
         this.items = items;
         this.freeItems = IntStream.range(0, database.getNbItems()).toArray();
@@ -40,10 +40,10 @@ public class CoverSize extends Propagator<IntVar> {
         this.firstIndex = database.getNbClass();
     }
 
-    public CoverSize(Database database, IntVar freq, BoolVar[] items, String bitSetType,
-                     boolean classCover) {
+    public CoverSize(Database database, IntVar freq, BoolVar[] items, boolean classCover) {
         super(ArrayUtils.concat(items, freq));
-        cover = classCover ? getBitSet1(bitSetType, database, model) : getBitSet(bitSetType, database, model);
+        cover = classCover ? getBitSet1(ConstraintSettings.BITSET_TYPE, database, model) :
+                getBitSet(ConstraintSettings.BITSET_TYPE, database, model);
         this.freq = freq;
         this.items = items;
         this.freeItems = IntStream.range(0, database.getNbItems()).toArray();
@@ -103,5 +103,9 @@ public class CoverSize extends Propagator<IntVar> {
     @Override
     public ESat isEntailed() {
         return ESat.UNDEFINED;
+    }
+
+    public BitSet getCover() {
+        return cover.getWords();
     }
 }

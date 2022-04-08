@@ -2,6 +2,7 @@ package io.gitlab.chaver.mining.patterns.constraints;
 
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.util.BitSetFacade;
+import io.gitlab.chaver.mining.patterns.util.ConstraintSettings;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -27,9 +28,9 @@ public class CoverClosure extends Propagator<BoolVar> {
     private final IStateInt lastIndexAbs;
     private final int firstIndex;
 
-    public CoverClosure(Database database, BoolVar[] items, String bitSetType) {
+    public CoverClosure(Database database, BoolVar[] items) {
         super(items);
-        cover = getBitSet(bitSetType, database, model);
+        cover = getBitSet(ConstraintSettings.BITSET_TYPE, database, model);
         this.items = items;
         this.freeItems = IntStream.range(0, database.getNbItems()).toArray();
         this.lastIndexFree = getModel().getEnvironment().makeInt(items.length);
