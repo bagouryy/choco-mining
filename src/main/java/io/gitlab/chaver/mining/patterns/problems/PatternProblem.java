@@ -256,7 +256,7 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
         solver.plugMonitor(monitor);
         if (paretoMeasuresId.size() > 0) {
             IntVar[] obj = skypatternMeasures.stream().map(m -> measureVars.get(m.getId())).toArray(IntVar[]::new);
-            model.post(new Constraint("Pareto", new ParetoPatternMaximizer(obj, monitor, paretoMeasuresId)));
+            model.post(new Constraint("Pareto", new ParetoPatternMaximizer(obj, monitor)));
         }
     }
 

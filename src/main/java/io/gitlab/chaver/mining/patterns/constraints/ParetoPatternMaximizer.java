@@ -16,13 +16,11 @@ public class ParetoPatternMaximizer extends Propagator<IntVar> {
 
     private IntVar[] objectives;
     private List<Pattern> archive;
-    private List<String> paretoMeasuresId;
 
-    public ParetoPatternMaximizer(IntVar[] objectives, PatternSearchMonitor monitor, List<String> paretoMeasuresId) {
+    public ParetoPatternMaximizer(IntVar[] objectives, PatternSearchMonitor monitor) {
         super(objectives);
         this.objectives = objectives;
         this.archive = monitor.getPatterns();
-        this.paretoMeasuresId = paretoMeasuresId;
     }
 
     /**
