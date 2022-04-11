@@ -233,7 +233,7 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
         IntVar freqY = model.intVar("freqY", minFreq, database.getNbTransactions());
         new Constraint("frequent Y", new CoverSize(database, freqY, y)).post();
         if (ruleType.equals(RuleType.mnr)) {
-            new Constraint("generator x", new Generator(x, database))
+            new Constraint("generator x", new Generator(database, x))
                     .post();
             new Constraint("closed z", new CoverClosure(database, z)).post();
         }

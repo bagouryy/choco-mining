@@ -9,8 +9,8 @@ import java.util.List;
 
 public class AdequateClosureDC extends AdequateClosure {
 
-    public AdequateClosureDC(Database database, BoolVar[] items, List<Measure> measures) {
-        super(database, items, measures);
+    public AdequateClosureDC(Database database, List<Measure> measures, BoolVar[] items) {
+        super(database, measures, items);
     }
 
     @Override

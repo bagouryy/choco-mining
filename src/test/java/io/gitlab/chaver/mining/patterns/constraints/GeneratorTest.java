@@ -26,7 +26,7 @@ public class GeneratorTest {
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         model.sum(x, "=", length).post();
         model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
-        model.post(new Constraint("Generator", new Generator(x, database)));
+        model.post(new Constraint("Generator", new Generator(database, x)));
         List<Solution> sols = model.getSolver().findAllSolutions();
         assertEquals(nbExpectedGenerator, sols.size());
     }

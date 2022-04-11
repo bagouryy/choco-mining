@@ -50,9 +50,9 @@ public class ClosedSky extends PatternProblem {
 
     private AdequateClosure getAdequateClosurePropagator() {
         if (wc) {
-            return new AdequateClosureWC(database, items, closedMeasures);
+            return new AdequateClosureWC(database, closedMeasures, items);
         }
-        return new AdequateClosureDC(database, items, closedMeasures);
+        return new AdequateClosureDC(database, closedMeasures, items);
     }
 
     @Override

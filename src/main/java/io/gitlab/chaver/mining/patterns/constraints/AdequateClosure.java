@@ -33,7 +33,7 @@ public abstract class AdequateClosure extends Propagator<BoolVar> {
     private int nFree;
     private int nAbs;
 
-    public AdequateClosure(Database database, BoolVar[] items, List<Measure> measures) {
+    public AdequateClosure(Database database, List<Measure> measures, BoolVar[] items) {
         super(items);
         this.items = items;
         this.database = database;

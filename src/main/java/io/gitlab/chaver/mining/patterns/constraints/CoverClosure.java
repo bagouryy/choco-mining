@@ -15,6 +15,6 @@ import static io.gitlab.chaver.mining.patterns.measure.MeasureFactory.freq;
 public class CoverClosure extends AdequateClosureWC {
 
     public CoverClosure(Database database, BoolVar[] items) {
-        super(database, items, Arrays.asList(freq()));
+        super(database, Arrays.asList(freq()), items);
     }
 }

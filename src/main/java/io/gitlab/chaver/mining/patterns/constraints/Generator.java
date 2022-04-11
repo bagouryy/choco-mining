@@ -36,7 +36,7 @@ public class Generator extends Propagator<BoolVar> {
     private final IStateInt lastIndexPresent;
     private final int firstIndex;
 
-    public Generator(BoolVar[] items, Database database) {
+    public Generator(Database database, BoolVar[] items) {
         super(items);
         this.items = items;
         this.database = database;

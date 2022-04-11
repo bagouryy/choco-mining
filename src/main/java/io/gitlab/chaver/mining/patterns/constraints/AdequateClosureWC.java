@@ -10,8 +10,8 @@ import java.util.List;
 
 public class AdequateClosureWC extends AdequateClosure {
 
-    public AdequateClosureWC(Database database, BoolVar[] items, List<Measure> measures) {
-        super(database, items, measures);
+    public AdequateClosureWC(Database database, List<Measure> measures, BoolVar[] items) {
+        super(database, measures, items);
     }
 
     @Override
