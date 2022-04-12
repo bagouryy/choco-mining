@@ -37,7 +37,7 @@
         <dependency>
             <groupId>io.gitlab.chaver</groupId>
             <artifactId>chocotools</artifactId>
-            <version>1.0.7</version>
+            <version>1.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

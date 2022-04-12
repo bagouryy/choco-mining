@@ -3,7 +3,8 @@ package io.gitlab.chaver.mining.patterns.problems;
 import io.gitlab.chaver.chocotools.problem.BuildModelException;
 import io.gitlab.chaver.chocotools.problem.ChocoProblem;
 import io.gitlab.chaver.chocotools.problem.SetUpException;
-import io.gitlab.chaver.mining.patterns.constraints.ParetoPatternMaximizer;
+import io.gitlab.chaver.chocotools.search.loop.monitors.SolutionRecorderMonitor;
+import io.gitlab.chaver.chocotools.util.ISolutionProvider;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
@@ -12,9 +13,10 @@ import io.gitlab.chaver.mining.patterns.measure.Measure;
 import io.gitlab.chaver.mining.patterns.measure.attribute.*;
 import io.gitlab.chaver.mining.patterns.measure.operand.MeasureOperand;
 import io.gitlab.chaver.mining.patterns.measure.pattern.*;
-import io.gitlab.chaver.mining.patterns.search.loop.monitors.PatternSearchMonitor;
+import io.gitlab.chaver.mining.patterns.search.loop.monitors.SkypatternMonitor;
 import io.gitlab.chaver.mining.patterns.search.strategy.selectors.variables.MinCov;
 import io.gitlab.chaver.mining.patterns.util.MeasureListConverter;
+import io.gitlab.chaver.mining.patterns.util.PatternCreator;
 import io.gitlab.chaver.mining.patterns.util.TransactionGetter;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.expression.discrete.relational.ReExpression;
@@ -61,7 +63,7 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
 
     private List<Measure> allMeasures;
     protected Database database;
-    private PatternSearchMonitor monitor;
+    private ISolutionProvider<Pattern> solutionProvider;
 
     // CP variables
     protected BoolVar[] items;
@@ -249,14 +251,19 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
 
     private void plugSearchMonitor() {
         List<String> allMeasuresId = allMeasures.stream().map(Measure::getId).collect(Collectors.toList());
-        List<String> paretoMeasuresId = skypatternMeasures.stream().map(Measure::getId).collect(Collectors.toList());
         TransactionGetter transactionGetter = saveTrans ? transactionGetter() : null;
-        monitor = new PatternSearchMonitor(database, items, allMeasuresId, paretoMeasuresId, measureVars,
-                transactionGetter);
-        solver.plugMonitor(monitor);
-        if (paretoMeasuresId.size() > 0) {
+        PatternCreator creator = new PatternCreator(database, items, allMeasuresId, measureVars, transactionGetter);
+        if (skypatternMeasures.size() == 0) {
+            SolutionRecorderMonitor<Pattern> monitor = new SolutionRecorderMonitor<>(creator);
+            solver.plugMonitor(monitor);
+            solutionProvider = monitor;
+        }
+        else {
             IntVar[] obj = skypatternMeasures.stream().map(m -> measureVars.get(m.getId())).toArray(IntVar[]::new);
-            model.post(new Constraint("Pareto", new ParetoPatternMaximizer(obj, monitor)));
+            SkypatternMonitor monitor = new SkypatternMonitor(obj, creator);
+            model.post(new Constraint("Pareto", monitor));
+            solver.plugMonitor(monitor);
+            solutionProvider = monitor;
         }
     }
 
@@ -266,7 +273,7 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
 
     @Override
     public List<Pattern> getSolutions() {
-        return monitor.getPatterns();
+        return Objects.isNull(solutionProvider) ? null : solutionProvider.getSolutions();
     }
 
     @Override

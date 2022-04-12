@@ -1,32 +1,27 @@
-package io.gitlab.chaver.mining.patterns.search.loop.monitors;
+package io.gitlab.chaver.mining.patterns.util;
 
+import io.gitlab.chaver.chocotools.util.Creator;
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
-import io.gitlab.chaver.mining.patterns.util.TransactionGetter;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
 @AllArgsConstructor
-public class PatternSearchMonitor implements IMonitorSolution {
+public class PatternCreator implements Creator<Pattern> {
 
-    protected final @Getter List<Pattern> patterns = new LinkedList<>();
-    protected Database database;
-    protected BoolVar[] items;
-    protected List<String> allMeasuresId;
-    protected List<String> paretoMeasuresId;
-    protected Map<String, IntVar> measureVars;
-    protected TransactionGetter transactionGetter;
+    private Database database;
+    private BoolVar[] items;
+    private List<String> allMeasuresId;
+    private Map<String, IntVar> measureVars;
+    private TransactionGetter transactionGetter;
 
     @Override
-    public void onSolution() {
+    public Pattern create() {
         int[] itemSave = IntStream
                 .range(0, items.length)
                 .filter(i -> items[i].isInstantiatedTo(1))
@@ -38,9 +33,6 @@ public class PatternSearchMonitor implements IMonitorSolution {
         }
         Pattern p = new Pattern(itemSave, measureSave);
         if (transactionGetter != null) p.setTransactions(transactionGetter.getTransactions());
-        patterns.add(p);
-        if (paretoMeasuresId.size() > 0) {
-            patterns.removeIf(p2 -> p2.isDominatedBy(p, paretoMeasuresId.size()));
-        }
+        return p;
     }
 }
