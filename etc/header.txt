@@ -1,0 +1,7 @@
+This file is part of ${project}
+
+Copyright (c) ${year}, ${owner}
+
+Licensed under the MIT license.
+
+See LICENSE file in the project root for full license information.

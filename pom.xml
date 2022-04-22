@@ -1,4 +1,15 @@
 <?xml version="1.0"?>
+<!--
+
+    This file is part of io.gitlab.chaver:data-mining
+
+    Copyright (c) 2022, IMT Atlantique
+
+    Licensed under the MIT license.
+
+    See LICENSE file in the project root for full license information.
+
+-->
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -14,6 +25,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javaVersion>8</javaVersion>
+        <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
     </properties>
 
     <dependencies>
@@ -80,6 +92,35 @@
                                 </manifest>
                             </archive>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>4.1</version>
+                <configuration>
+                    <header>etc/header.txt</header>
+                    <properties>
+                        <year>${maven.build.timestamp}</year>
+                        <owner>IMT Atlantique</owner>
+                        <project>${project.groupId}:${project.artifactId}</project>
+                    </properties>
+                    <mapping>
+                        <template>JAVADOC_STYLE</template>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
+                    <includes>
+                        <include>**/*.java</include>
+                        <include>**/pom.xml</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
