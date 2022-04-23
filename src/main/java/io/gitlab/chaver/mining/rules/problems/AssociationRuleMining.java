@@ -23,6 +23,7 @@ import io.gitlab.chaver.mining.patterns.io.Pattern;
 import io.gitlab.chaver.mining.patterns.io.PatternProblemProperties;
 import io.gitlab.chaver.mining.rules.io.ArMeasuresView;
 import io.gitlab.chaver.mining.rules.io.AssociationRule;
+import io.gitlab.chaver.mining.rules.io.RuleType;
 import io.gitlab.chaver.mining.rules.search.loop.monitors.ArMonitor;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Settings;
@@ -51,8 +52,6 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
     private String dataPath;
     //@Option(names = {"--nc"}, description = "Ignore classes of transactions")
     private boolean noClasses = true;
-    // @Option(names = {"--dat"}, description = "Use DAT file format")
-    private boolean datFormat = true;
     @Option(names = {"--rt"}, description = "Rule type : ${COMPLETION-CANDIDATES} (default : ${DEFAULT-VALUE})")
     private RuleType ruleType = RuleType.ar;
     @Option(names = "--fmin", description = "Min frequency of the rule (absolute value)")
@@ -67,8 +66,6 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
     private Database database;
     private ArMonitor arMonitor;
     private Map<Set<Integer>, Set<Integer>> closedPatterns;
-
-    private enum RuleType { ar, mnr }
 
     @Override
     public void parseArgs() throws SetUpException {
@@ -91,14 +88,6 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
             throw new SetUpException(e.getMessage());
         }
     }
-
-    /*private int getAllConfidenceMin() {
-        String allConfidenceMin = "acmin";
-        if (constraints.containsKey(allConfidenceMin)) {
-            return (int) Math.round(Double.parseDouble(constraints.get(allConfidenceMin)) * 10000);
-        }
-        return 0;
-    }*/
 
     /**
      * If skypattern constraint, associate each skypattern to its closure
@@ -164,50 +153,6 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
         return skyVar;
     }
 
-    /*private Set<Integer> getZeroItems() {
-        String presentItemsKey = "items";
-        if (! constraints.containsKey(presentItemsKey)) return new HashSet<>();
-        Set<Integer> zeroItems = IntStream.range(database.getNbClass(), database.getNbItems())
-                .boxed()
-                .collect(Collectors.toSet());
-        Map<String, Integer> itemsMap = new HashMap<>();
-        for (int i = 0; i < database.getNbItems(); i++) {
-            itemsMap.put(Integer.toString(database.getItems()[i]), i);
-        }
-        Set<String> presentItems = new HashSet<>(Arrays.asList(constraints.get(presentItemsKey).split("&")));
-        for (String item : presentItems) {
-            zeroItems.remove(itemsMap.get(item));
-        }
-        return zeroItems;
-    }
-
-    private void aconfConstraint(BoolVar[] z, IntVar freqZ) {
-        IntVar maxFreq = model.intVar("maxFreq", 0, database.getNbTransactions());
-        int[] itemFreq = new FreqMetric(database).compute();
-        IntVar[] itemFreqVar = model.intVarArray(database.getNbItems(), 0, database.getNbTransactions());
-        for (int i = 0; i < database.getNbItems(); i++) {
-            model.arithm(z[i], "*", model.intVar(itemFreq[i]), "=", itemFreqVar[i]).post();
-        }
-        model.max(maxFreq, itemFreqVar).post();
-        freqZ.mul(10000).ge(maxFreq.mul(getAllConfidenceMin())).post();
-    }
-
-    private void forbiddenAntecedentItemsConstraint(BoolVar[] x) {
-        if (!constraints.containsKey("!x")) return;
-        Map<Integer, Integer> itemsMap = database.getItemsMap();
-        Arrays.stream(constraints.get("!x").split("a"))
-                .mapToInt(Integer::parseInt)
-                .forEach(i -> x[itemsMap.get(i)].eq(0).post());
-    }
-
-    private void forbiddenConsequentItemsConstraint(BoolVar[] y) {
-        if (!constraints.containsKey("!y")) return;
-        Map<Integer, Integer> itemsMap = database.getItemsMap();
-        Arrays.stream(constraints.get("!y").split("a"))
-                .mapToInt(Integer::parseInt)
-                .forEach(i -> y[itemsMap.get(i)].eq(0).post());
-    }*/
-
     @Override
     public void buildModel() {
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
@@ -219,21 +164,6 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
         }
         model.addClausesBoolOrArrayEqualTrue(x);
         model.addClausesBoolOrArrayEqualTrue(y);
-        /*forbiddenAntecedentItemsConstraint(x);
-        forbiddenConsequentItemsConstraint(y);
-        Set<Integer> zeroItems = getZeroItems();
-        if (zeroItems.size() > 0) {
-            List<BoolVar> requiredItems = new LinkedList<>();
-            for (int i = 0; i < database.getNbItems(); i++) {
-                if (zeroItems.contains(i)) {
-                    model.arithm(z[i], "=", 0).post();
-                }
-                else {
-                    requiredItems.add(z[i]);
-                }
-            }
-            model.and(requiredItems.toArray(new BoolVar[0])).post();
-        }*/
         IntVar freqZ = model.intVar("freqZ", minFreq, database.getNbTransactions());
         new Constraint("frequent Z", new CoverSize(database, freqZ, z)).post();
         IntVar freqX = model.intVar("freqX", minFreq, database.getNbTransactions());

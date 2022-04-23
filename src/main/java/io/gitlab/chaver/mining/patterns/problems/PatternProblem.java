@@ -56,10 +56,6 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
     private List<Measure> additionalMeasures = new LinkedList<>();
     @Option(names = {"--nc"}, description = "Ignore class of the transactions")
     private boolean noClasses;
-    /*@Option(names = {"--trace"}, description = "Trace search tree in Graphviz format")
-    private String tracePath;
-    @Option(names = {"--str"}, description = "Strategy to branch on item", paramLabel = "<str>")
-    private String itemSelectorStrategy = MinCovSelector.TYPE;*/
     @Option(names = "--lmin", description = "Min length of the pattern (default : ${DEFAULT-VALUE})",
             defaultValue = "1")
     private int lengthMin;
