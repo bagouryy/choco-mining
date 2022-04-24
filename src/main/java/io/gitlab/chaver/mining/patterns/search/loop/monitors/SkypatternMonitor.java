@@ -16,8 +16,8 @@ import org.chocosolver.solver.variables.IntVar;
 
 public class SkypatternMonitor extends IntParetoMaximizer<Pattern> {
 
-    public SkypatternMonitor(IntVar[] objectives, Creator<Pattern> creator) {
-        super(objectives, creator);
+    public SkypatternMonitor(IntVar[] objectives, Creator<Pattern> creator, boolean strict) {
+        super(objectives, creator, strict);
     }
 
     @Override

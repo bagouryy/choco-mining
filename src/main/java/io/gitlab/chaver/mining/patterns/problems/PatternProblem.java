@@ -265,7 +265,7 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
         }
         else {
             IntVar[] obj = skypatternMeasures.stream().map(m -> measureVars.get(m.getId())).toArray(IntVar[]::new);
-            SkypatternMonitor monitor = new SkypatternMonitor(obj, creator);
+            SkypatternMonitor monitor = new SkypatternMonitor(obj, creator, false);
             model.post(new Constraint("Pareto", monitor));
             solver.plugMonitor(monitor);
             solutionProvider = monitor;
