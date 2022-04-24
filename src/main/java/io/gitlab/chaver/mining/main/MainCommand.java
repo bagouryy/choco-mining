@@ -16,7 +16,8 @@ import io.gitlab.chaver.mining.rules.problems.AssociationRuleMining;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "mine", subcommands = {ClosedSky.class, CpSky.class, AssociationRuleMining.class})
+@Command(subcommands = {AssociationRuleMining.class, ClosedSky.class, CpSky.class}, mixinStandardHelpOptions = true,
+        version = "1.0.0")
 public class MainCommand {
 
     public static void main(String[] args) {
