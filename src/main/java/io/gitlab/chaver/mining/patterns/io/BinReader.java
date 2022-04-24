@@ -38,6 +38,7 @@ public class BinReader extends DataReader {
         try (BufferedReader reader = new BufferedReader(new FileReader(dataPath))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                if (skipLine(line)) continue;
                 nbTransactions++;
                 int currentNbItems = line.split(" ").length;
                 if (nbItems == 0) {
@@ -62,6 +63,7 @@ public class BinReader extends DataReader {
             int currentTransaction = 0;
             String line;
             while ((line = reader.readLine()) != null) {
+                if (skipLine(line)) continue;
                 String[] lineItems = line.split(" ");
                 int itemClass = -1;
                 for (int i = 0; i < lineItems.length; i++) {

@@ -40,7 +40,7 @@ public class DatReader extends DataReader {
         nbTransactions = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(dataPath))) {
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith("#")) continue;
+                if (skipLine(line)) continue;
                 String[] itemsLine = line.split(" ");
                 for (int i = 0; i < itemsLine.length; i++) {
                     String item = itemsLine[i];
@@ -70,7 +70,7 @@ public class DatReader extends DataReader {
             String line;
             int currentTransaction = 0;
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith("#")) continue;
+                if (skipLine(line)) continue;
                 String[] itemsLine = line.split(" ");
                 int class1 = itemMap.get(Integer.parseInt(itemsLine[0])) + 1;
                 maxClass = Math.max(class1, maxClass);

@@ -79,4 +79,8 @@ public abstract class DataReader {
         }
         return valueList;
     }
+
+    protected boolean skipLine(String line) {
+        return line.isEmpty() || line.charAt(0) == '#' || line.charAt(0) == '%' || line.charAt(0) == '@';
+    }
 }
