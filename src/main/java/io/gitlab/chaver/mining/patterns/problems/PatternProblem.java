@@ -36,6 +36,9 @@ import org.chocosolver.solver.variables.IntVar;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,6 +46,7 @@ import java.util.stream.Stream;
 import static io.gitlab.chaver.mining.patterns.measure.MeasureFactory.*;
 
 public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProblemProperties> {
+
     @Option(names = "-d", required = true, description = "Path of the transactional database")
     private String dataPath;
     @Option(names = "--skym", description = "Skypattern measures", converter = MeasureListConverter.class,
@@ -65,10 +69,18 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
     private boolean noInfiniteGr;
     @Option(names = "--trans", description = "Save transactions of the patterns")
     private boolean saveTrans;
+    @Option(names = "--0i", description = "Items to exclude from the mining (path of a file where each line " +
+            "represents an item to exclude)")
+    private String zeroItemsPath;
+    @Option(names = "--ri", description = "Required items : post a constraint such that at least one of these items" +
+            " is present in the pattern (path of a file where each line represents an item)")
+    private String requiredItemsPath;
 
     private List<Measure> allMeasures;
     protected Database database;
     private ISolutionProvider<Pattern> solutionProvider;
+    private int[] zeroItems;
+    private int[] requiredItems;
 
     // CP variables
     protected BoolVar[] items;
@@ -234,14 +246,41 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
                 .orElse(-1);
         try {
             database = new DatReader(dataPath, idxValMeasure + 1, noClasses).readFiles();
+            Map<Integer, Integer> itemsMap = database.getItemsMap();
+            if (zeroItemsPath != null) {
+                zeroItems = Files
+                        .readAllLines(Paths.get(zeroItemsPath), StandardCharsets.UTF_8)
+                        .stream()
+                        .mapToInt(s -> itemsMap.get(Integer.parseInt(s)))
+                        .toArray();
+            }
+            if (requiredItemsPath != null) {
+                requiredItems = Files
+                        .readAllLines(Paths.get(requiredItemsPath), StandardCharsets.UTF_8)
+                        .stream()
+                        .mapToInt(s -> itemsMap.get(Integer.parseInt(s)))
+                        .toArray();
+            }
         } catch (IOException e) {
             throw new SetUpException(e.getMessage(), e);
         }
     }
 
+    private void zeroItemsConstraint() {
+        if (zeroItems == null) return;
+        Arrays.stream(zeroItems).forEach(i -> items[i].eq(0).post());
+    }
+
+    private void requiredItemsConstraint() {
+        if (requiredItems == null) return;
+        model.or(Arrays.stream(requiredItems).mapToObj(i -> items[i]).toArray(BoolVar[]::new)).post();
+    }
+
     @Override
     public void buildModel() throws BuildModelException {
         itemVars();
+        zeroItemsConstraint();
+        requiredItemsConstraint();
         freqVar();
         lengthVar();
         for (Measure m : allMeasures) createMeasureVar(m);

@@ -29,6 +29,8 @@ public class Database {
     private BitSet[] verticalRepresentation;
     /** Number of transactions in the dataset */
     private int nbTransactions;
+    /** Map each item to its position in items array */
+    private Map<Integer, Integer> itemsMap;
 
     public Database(int[] items, int[][] values, int nbClass, BitSet[] verticalRepresentation, int nbTransactions) {
         this.items = items;
@@ -80,9 +82,11 @@ public class Database {
      * @return map
      */
     public Map<Integer, Integer> getItemsMap() {
-        Map<Integer, Integer> itemsMap = new HashMap<>();
-        for (int i = 0; i < items.length; i++) {
-            itemsMap.put(items[i], i);
+        if (itemsMap == null) {
+            itemsMap = new HashMap<>();
+            for (int i = 0; i < items.length; i++) {
+                itemsMap.put(items[i], i);
+            }
         }
         return itemsMap;
     }
