@@ -38,9 +38,14 @@ The following constraints are available :
 - **CoverSize** : given an integer variable `f` and pattern `x`, ensures that `f = freq(x)` (see *Schaus et al. - CoverSize : A Global Constraint for Frequency-Based Itemset Mining*)
 - **Generator** : ensures that a pattern `x` is a generator (see *Belaid et al. - Constraint Programming for Association Rules*)
 
+Note that a `jar` file with all the required dependencies is available [here](https://drive.google.com/file/d/1o5BQb7ATyW_Ha6bJgJPYfd9BZBedQIXJ/view?usp=sharing) if you really don't want to use Maven.
+
 ## Usage
 
 You can run the jar file using the script `run` at the root of the project. 
+
+For each subcommand, you can list all the possible arguments using `-h` option, for example `./run closedsky -h`.
+
 For each subcommand, you can specify an option `--tl` to limit the time of the search. For example, `--tl 60` means that the search will stop after `60` seconds if not complete. The following subcommands are available :
 
 **closedsky/cpsky** : extract closed/sky patterns
@@ -51,7 +56,7 @@ Using the dataset `iris`, extract the skypatterns w.r.t. the set of measures `{f
 ./run closedsky -d data/iris.dat --skym fagn0M1 --wc -s -p --json iris_sky_fagn0M1.json
 ```
 
-Using the dataset `iris`, extract the skypatterns w.r.t. the set of measures `{freq(x),area(x),aconf(x)}`, using the weak consistency version of AdequateClosure (`--wc`), ignore class of the transactions (`--nc`), save result in a file named `iris_sky_fac.json`. Note that the `aconf` of a pattern `x` is multiplied by `10000`. For example, if the aconf of a pattern `x` is indicated to be `8526`, it means that the real aconf of this pattern is `0.8526`.
+Using the dataset `iris`, extract the skypatterns w.r.t. the set of measures `{freq(x),area(x),aconf(x)}`, using the weak consistency version of AdequateClosure (`--wc`), ignore class of the transactions (`--nc`), save result in a file named `iris_sky_fac.json`. Note that the `aconf` of a pattern `x` is multiplied by `10000`. For example, if the aconf of a pattern `x` is indicated to be `8526`, it means that the real aconf of this pattern is `0.8526`. Ignoring the class of the transactions means that the first item of each transaction will be taken into account in the mining (by default, they are ignored).
 
 ```bash
 ./run closedsky -d data/iris.dat --skym fac --wc --nc --json iris_sky_fac.json
@@ -65,7 +70,7 @@ Using the dataset `iris`, extract the closed patterns w.r.t. the set of measures
 
 **arm** : association rule mining
 
-Using the dataset `iris`, extract the Minimal Non-Redundant (`mnr`) rules, with a min relative frequency of `0.2`, a min confidence of `0.9`, print stats of the search (`-s`), print the rules (`-p`), save result in a file named `iris_mnr_20_90.json`.
+Using the dataset `iris`, extract the Minimal Non-Redundant (`mnr`) rules, with a min relative frequency of `0.2`, a min confidence of `0.9`, print stats of the search (`-s`), print the rules (`-p`), save result in a file named `iris_mnr_20_90.json`. Note that if you want all the rules you can specify the option `--rt ar` instead.
 
 ```bash
 ./run arm -d data/iris.dat --rt mnr --rfmin 0.2 --cmin 0.9 -s -p --json iris_mnr_20_90.json
