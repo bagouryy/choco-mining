@@ -25,7 +25,7 @@ public class PatternUtil {
      * @param stream input stream of skypatterns
      * @return The list of patterns contained in the stream
      */
-    public static List<Pattern> readPatternStream(InputStream stream, List<String> measuresId) throws IOException {
+    public static List<Pattern> readPatternStream(InputStream stream) throws IOException {
         List<Pattern> skypatterns = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String line;

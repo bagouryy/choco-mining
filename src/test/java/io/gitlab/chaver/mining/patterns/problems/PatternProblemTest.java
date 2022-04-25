@@ -70,7 +70,7 @@ public abstract class PatternProblemTest {
     public abstract PatternProblem getProblem();
 
     private List<Pattern> readPatterns(String patternPath, List<String> measuresId) throws IOException {
-        return readPatternStream(new FileInputStream(patternPath), measuresId);
+        return readPatternStream(new FileInputStream(patternPath));
     }
 
     private void testEqualsPatterns(List<Pattern> p1, List<Pattern> p2) {
