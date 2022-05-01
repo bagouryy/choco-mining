@@ -87,18 +87,6 @@ public class CoverSize extends Propagator<IntVar> {
         int freqLB = cover.maskCardinality();
         int freqUB = cover.cardinality();
         freq.updateBounds(freqLB, freqUB, this);
-
-        if (freqUB == freq.getLB()) {
-            // remove all unbound items that are not super sets of coverage
-            // because these would necessarily decrease the coverage
-            for (int i = nU - 1; i >= firstIndex ; i--) {
-                int idx = freeItems[i];
-                if (!cover.isSubsetOf(idx)) {
-                    nU = removeItem(i, nU, idx);
-                    items[idx].setToFalse(this);
-                }
-            }
-        }
         lastIndexFree.set(nU);
     }
 
