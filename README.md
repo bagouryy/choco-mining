@@ -1,6 +1,6 @@
 # Data-mining
 
-This repository contains the source code that was used in the experiments of the following paper : *Vernerey et al. - Threshold-free Pattern Mining Meets Multi-Objective Optimization: Application to Association Rules* ([IJCAI 2022](https://ijcai-22.org/)).
+This repository contains the source code that was used in the experiments of the following paper : *Vernerey et al. - Threshold-free Pattern Mining Meets Multi-Objective Optimization: Application to Association Rules* ([IJCAI 2022](https://ijcai-22.org/)). Supplementary material is available in the `paper` folder.
 
 ## Requirements
 
