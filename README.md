@@ -56,10 +56,10 @@ Using the dataset `iris`, extract the skypatterns w.r.t. the set of measures `{f
 ./run closedsky -d data/iris.dat --skym fagn0M1 --wc -s -p --json iris_sky_fagn0M1.json
 ```
 
-Using the dataset `iris`, extract the skypatterns w.r.t. the set of measures `{freq(x),area(x),aconf(x)}`, using the weak consistency version of AdequateClosure (`--wc`), ignore class of the transactions (`--nc`), save result in a file named `iris_sky_fac.json`. Note that the `aconf` of a pattern `x` is multiplied by `10000`. For example, if the aconf of a pattern `x` is indicated to be `8526`, it means that the real aconf of this pattern is `0.8526`. Ignoring the class of the transactions means that the first item of each transaction will be taken into account in the mining (by default, they are ignored).
+Using the dataset `iris`, extract the skypatterns w.r.t. the set of measures `{freq(x),area(x),aconf(x)}`, using the weak consistency version of AdequateClosure (`--wc`), ignore class of the transactions (`--nc`), with a min length of `2`, save result in a file named `iris_sky_fac.json`. Note that the `aconf` of a pattern `x` is multiplied by `10000`. For example, if the aconf of a pattern `x` is indicated to be `8526`, it means that the real aconf of this pattern is `0.8526`. Ignoring the class of the transactions means that the first item of each transaction will be taken into account in the mining (by default, they are considered as class of the transactions and they are ignored).
 
 ```bash
-./run closedsky -d data/iris.dat --skym fac --wc --nc --json iris_sky_fac.json
+./run closedsky -d data/iris.dat --skym fac --wc --nc --lmin 2 --json iris_sky_fac.json
 ```
 
 Using the dataset `iris`, extract the closed patterns w.r.t. the set of measures `{freq(x),min(x.val0)}`, print stats of the search (`-s`), print all the patterns (`-p`).
