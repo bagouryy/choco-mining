@@ -9,10 +9,12 @@
  */
 package io.gitlab.chaver.mining.rules.io;
 
+import io.gitlab.chaver.mining.patterns.io.Database;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.text.DecimalFormat;
+import java.util.Map;
 
 /**
  * Represents an association rule x -> y, such that z = x U y
@@ -83,6 +85,17 @@ public class AssociationRule {
         return str.toString();
     }
 
+    private String convertToString(int[] pattern, String[] labels, Database database) {
+        if (pattern.length == 0) return "{}";
+        Map<Integer, Integer> itemsMap = database.getItemsMap();
+        StringBuilder str = new StringBuilder("{").append(labels[itemsMap.get(pattern[0])]);
+        for (int i = 1; i < pattern.length; i++) {
+            str.append(", ").append(labels[itemsMap.get(pattern[i])]);
+        }
+        str.append("}");
+        return str.toString();
+    }
+
     @Override
     public String toString() {
         return "AssociationRule{" +
@@ -96,11 +109,18 @@ public class AssociationRule {
 
     /**
      * Convert rule to String
-     * @param nbTransactions number of transactions in the database
+     * @param database database to consider
+     * @param labels label of each item
      * @return corresponding string
      */
-    public String toString(int nbTransactions) {
-        return convertToString(x) + " => " + convertToString(y) + ", supZ=" + df.format(support(nbTransactions)) +
+    public String toString(Database database, String[] labels) {
+        int nbTransactions = database.getNbTransactions();
+        if (labels == null) {
+            return convertToString(x) + " => " + convertToString(y) + ", supZ=" + df.format(support(nbTransactions)) +
+                    ", conf=" + df.format(conf()) + ", lift=" + df.format(lift(nbTransactions));
+        }
+        return convertToString(x, labels, database) + " => " + convertToString(y, labels, database) +
+                ", supZ=" + df.format(support(nbTransactions)) +
                 ", conf=" + df.format(conf()) + ", lift=" + df.format(lift(nbTransactions));
     }
 }

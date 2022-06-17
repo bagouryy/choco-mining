@@ -71,6 +71,9 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
     @Option(names = "--0c", description = "Items to exclude in the consequent (path of a file where each line " +
             "represents an item to exclude)")
     private String zeroItemsConsequentPath;
+    @Option(names = "--lab", description = "File path with the label of items (each line corresponds to one item)")
+    private String labelsPath;
+    private String[] labels;
 
     private Database database;
     private ArMonitor arMonitor;
@@ -106,6 +109,9 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
                         .stream()
                         .mapToInt(s -> itemsMap.get(Integer.parseInt(s)))
                         .toArray();
+            }
+            if (labelsPath != null) {
+                labels = Files.readAllLines(Paths.get(labelsPath), StandardCharsets.UTF_8).toArray(new String[0]);
             }
         }
         catch (IOException e) {
@@ -236,7 +242,7 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
 
     @Override
     protected void printSolutions() {
-        getSolutions().forEach(s -> System.out.println(s.toString(database.getNbTransactions())));
+        getSolutions().forEach(s -> System.out.println(s.toString(database, labels)));
     }
 
     public static void main(String[] args) throws Exception {
