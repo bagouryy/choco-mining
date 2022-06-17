@@ -75,6 +75,9 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
     @Option(names = "--ri", description = "Required items : post a constraint such that at least one of these items" +
             " is present in the pattern (path of a file where each line represents an item)")
     private String requiredItemsPath;
+    @Option(names = "--lab", description = "File path with the label of items (each line corresponds to one item)")
+    private String labelsPath;
+    private String[] labels;
 
     private List<Measure> allMeasures;
     protected Database database;
@@ -99,6 +102,7 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
         if (m.getClass() == Freq.class) freqVar();
         else if (m.getClass() == Length.class) lengthVar();
         else if (m.getClass() == Area.class) areaVar();
+        else if (m.getClass() == MaxFreq.class) maxFreqVar();
         else if (m.getClass() == AllConf.class) aconfVar();
         else if (m.getClass() == GrowthRate.class) growthRateVar();
         else if (m.getClass() == Mean.class) meanValueVar(num);
@@ -261,6 +265,9 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
                         .mapToInt(s -> itemsMap.get(Integer.parseInt(s)))
                         .toArray();
             }
+            if (labelsPath != null) {
+                labels = Files.readAllLines(Paths.get(labelsPath), StandardCharsets.UTF_8).toArray(new String[0]);
+            }
         } catch (IOException e) {
             throw new SetUpException(e.getMessage(), e);
         }
@@ -340,7 +347,7 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
     protected void printSolutions() {
         List<String> allMeasuresId = allMeasures.stream().map(Measure::getId).collect(Collectors.toList());
         for (Pattern p : getSolutions()) {
-            System.out.println(p.toString(allMeasuresId));
+            System.out.println(p.toString(allMeasuresId, labels, database));
         }
     }
 }

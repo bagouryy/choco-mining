@@ -31,6 +31,7 @@ public class MeasureListConverter implements ITypeConverter<List<Measure>> {
             else if (argSplit[i].equals("g")) measures.add(growthRate());
             else if (argSplit[i].equals("c")) measures.add(allConf());
             else if (argSplit[i].equals("l")) measures.add(length());
+            else if (argSplit[i].equals("F")) measures.add(maxFreq());
             else if (argSplit[i].equals("n")) measures.add(mean(Integer.parseInt(argSplit[++i])));
             else if (argSplit[i].equals("m")) measures.add(min(Integer.parseInt(argSplit[++i])));
             else if (argSplit[i].equals("M")) measures.add(max(Integer.parseInt(argSplit[++i])));

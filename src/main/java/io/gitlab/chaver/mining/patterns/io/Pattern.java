@@ -16,6 +16,7 @@ import lombok.ToString;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A pattern is a set of items
@@ -54,10 +55,17 @@ public class Pattern {
     /**
      * Convert pattern to String with the id of each measure
      * @param measuresId id of the measures
+     * @param labels label of each item
+     * @param database database to consider
      * @return the string representation
      */
-    public String toString(List<String> measuresId) {
-        StringBuilder str = new StringBuilder("Pattern(items=").append(Arrays.toString(items)).append(", measures={");
+    public String toString(List<String> measuresId, String[] labels, Database database) {
+        String[] itemLabels = Arrays.stream(items).mapToObj(Integer::toString).toArray(String[]::new);
+        if (labels != null) {
+            Map<Integer, Integer> itemMap = database.getItemsMap();
+            itemLabels = Arrays.stream(items).mapToObj(i -> labels[itemMap.get(i)]).toArray(String[]::new);
+        }
+        StringBuilder str = new StringBuilder("Pattern(items=").append(Arrays.toString(itemLabels)).append(", measures={");
         for (int i = 0; i < measuresId.size(); i++) {
             str.append(measuresId.get(i)).append("=").append(measures[i]).append(i == measuresId.size() - 1 ? "" : ", ");
         }
