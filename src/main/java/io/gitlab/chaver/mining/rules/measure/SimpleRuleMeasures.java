@@ -1,0 +1,62 @@
+/*
+ * This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
+ *
+ * Copyright (c) 2022, IMT Atlantique
+ *
+ * Licensed under the MIT license.
+ *
+ * See LICENSE file in the project root for full license information.
+ */
+package io.gitlab.chaver.mining.rules.measure;
+
+import io.gitlab.chaver.mining.rules.io.AssociationRule;
+
+/**
+ * Classic rule measures
+ */
+public enum SimpleRuleMeasures implements RuleMeasure {
+
+    sup {
+        @Override
+        public String getName() {
+            return "support";
+        }
+        @Override
+        public double compute(AssociationRule rule, int nbTransactions) {
+            return rule.getFreqZ();
+        }
+    },
+    rsup {
+        @Override
+        public String getName() {
+            return "relative support";
+        }
+
+        @Override
+        public double compute(AssociationRule rule, int nbTransactions) {
+            return (double) rule.getFreqZ() / nbTransactions;
+        }
+    },
+    conf {
+        @Override
+        public String getName() {
+            return "confidence";
+        }
+        @Override
+        public double compute(AssociationRule rule, int nbTransactions) {
+            return (double) rule.getFreqZ() / rule.getFreqX();
+        }
+    },
+    lift {
+        @Override
+        public String getName() {
+            return "lift";
+        }
+        @Override
+        public double compute(AssociationRule rule, int nbTransactions) {
+            return conf.compute(rule, nbTransactions) * nbTransactions / rule.getFreqY();
+        }
+    }
+
+
+}

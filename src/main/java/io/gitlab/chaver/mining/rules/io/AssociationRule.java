@@ -10,10 +10,12 @@
 package io.gitlab.chaver.mining.rules.io;
 
 import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.rules.measure.RuleMeasure;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,58 +24,30 @@ import java.util.Map;
 @AllArgsConstructor
 public class AssociationRule {
 
-    public static DecimalFormat df = new DecimalFormat("0.000");
-
     /**
-     * Antecedent of the rule
+     * Items in the antecedent of the rule
      */
     private @Getter int[] x;
 
     /**
-     * Conclusion of the rule
+     * Items in the consequence of the rule
      */
     private @Getter int[] y;
 
     /**
-     * Frequency of x
+     * Frequency of x (antecedent of the rule)
      */
     private @Getter int freqX;
 
     /**
-     * Frequency of y
+     * Frequency of y (consequence of the rule)
      */
     private @Getter int freqY;
 
     /**
-     * Frequency of z
+     * Frequency of z (union between the antecedent and the consequence of the rule)
      */
     private @Getter int freqZ;
-
-    /**
-     * Compute the confidence of the rule
-     * @return confidence of the rule
-     */
-    public double conf() {
-        return (double) freqZ / freqX;
-    }
-
-    /**
-     * Compute relative support of the rule
-     * @param nbTransactions number of transactions in the database
-     * @return relative support of the rule
-     */
-    public double support(int nbTransactions) {
-        return (double) freqZ / nbTransactions;
-    }
-
-    /**
-     * Compute lift of the rule
-     * @param nbTransactions number of transactions in the database
-     * @return lift of the rule
-     */
-    public double lift(int nbTransactions) {
-        return conf() * nbTransactions / freqY;
-    }
 
     private String convertToString(int[] pattern) {
         if (pattern.length == 0) return "{}";
@@ -107,20 +81,33 @@ public class AssociationRule {
                 '}';
     }
 
+    private String computeMeasures(List<RuleMeasure> measures, int nbTransactions, DecimalFormat measureFormat) {
+        StringBuilder str = new StringBuilder("{");
+        boolean begin = true;
+        for (RuleMeasure measure : measures) {
+            if (!begin) {
+                str.append(", ");
+            }
+            begin = false;
+            str.append(measure.getName()).append("=").append(measureFormat.format(measure.compute(this, nbTransactions)));
+        }
+        str.append("}");
+        return str.toString();
+    }
+
     /**
      * Convert rule to String
      * @param database database to consider
      * @param labels label of each item
      * @return corresponding string
      */
-    public String toString(Database database, String[] labels) {
+    public String toString(Database database, String[] labels, List<RuleMeasure> measures, DecimalFormat measureFormat) {
         int nbTransactions = database.getNbTransactions();
         if (labels == null) {
-            return convertToString(x) + " => " + convertToString(y) + ", supZ=" + df.format(support(nbTransactions)) +
-                    ", conf=" + df.format(conf()) + ", lift=" + df.format(lift(nbTransactions));
+            return convertToString(x) + " => " + convertToString(y) + ", measures=" +
+                    computeMeasures(measures, nbTransactions, measureFormat);
         }
         return convertToString(x, labels, database) + " => " + convertToString(y, labels, database) +
-                ", supZ=" + df.format(support(nbTransactions)) +
-                ", conf=" + df.format(conf()) + ", lift=" + df.format(lift(nbTransactions));
+                ", measures=" + computeMeasures(measures, nbTransactions, measureFormat);
     }
 }

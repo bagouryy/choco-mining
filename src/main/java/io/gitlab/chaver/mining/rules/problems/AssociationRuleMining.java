@@ -24,6 +24,7 @@ import io.gitlab.chaver.mining.patterns.io.PatternProblemProperties;
 import io.gitlab.chaver.mining.rules.io.ArMeasuresView;
 import io.gitlab.chaver.mining.rules.io.AssociationRule;
 import io.gitlab.chaver.mining.rules.io.RuleType;
+import io.gitlab.chaver.mining.rules.measure.RuleMeasure;
 import io.gitlab.chaver.mining.rules.search.loop.monitors.ArMonitor;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Settings;
@@ -42,10 +43,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.gitlab.chaver.mining.patterns.util.PatternUtil.findClosedPattern;
+import static io.gitlab.chaver.mining.rules.measure.SimpleRuleMeasures.*;
 import static org.chocosolver.solver.search.strategy.Search.intVarSearch;
 
 @Command(name = "arm", description = "Association rule mining", mixinStandardHelpOptions = true)
@@ -74,6 +77,8 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
     @Option(names = "--lab", description = "File path with the label of items (each line corresponds to one item)")
     private String labelsPath;
     private String[] labels;
+    private List<RuleMeasure> measures = Arrays.asList(sup, rsup, conf, lift);
+    private DecimalFormat measureFormat = new DecimalFormat("0.000");
 
     private Database database;
     private ArMonitor arMonitor;
@@ -242,7 +247,7 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
 
     @Override
     protected void printSolutions() {
-        getSolutions().forEach(s -> System.out.println(s.toString(database, labels)));
+        getSolutions().forEach(s -> System.out.println(s.toString(database, labels, measures, measureFormat)));
     }
 
     public static void main(String[] args) throws Exception {
