@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.rules.measure;
 
-import io.gitlab.chaver.mining.rules.io.AssociationRule;
+import io.gitlab.chaver.mining.rules.io.IRule;
 
 /**
  * Classic rule measures
@@ -22,7 +22,7 @@ public enum SimpleRuleMeasures implements RuleMeasure {
             return "support";
         }
         @Override
-        public double compute(AssociationRule rule, int nbTransactions) {
+        public double compute(IRule rule, int nbTransactions) {
             return rule.getFreqZ();
         }
     },
@@ -33,7 +33,7 @@ public enum SimpleRuleMeasures implements RuleMeasure {
         }
 
         @Override
-        public double compute(AssociationRule rule, int nbTransactions) {
+        public double compute(IRule rule, int nbTransactions) {
             return (double) rule.getFreqZ() / nbTransactions;
         }
     },
@@ -43,7 +43,7 @@ public enum SimpleRuleMeasures implements RuleMeasure {
             return "confidence";
         }
         @Override
-        public double compute(AssociationRule rule, int nbTransactions) {
+        public double compute(IRule rule, int nbTransactions) {
             return (double) rule.getFreqZ() / rule.getFreqX();
         }
     },
@@ -53,7 +53,7 @@ public enum SimpleRuleMeasures implements RuleMeasure {
             return "lift";
         }
         @Override
-        public double compute(AssociationRule rule, int nbTransactions) {
+        public double compute(IRule rule, int nbTransactions) {
             return conf.compute(rule, nbTransactions) * nbTransactions / rule.getFreqY();
         }
     }

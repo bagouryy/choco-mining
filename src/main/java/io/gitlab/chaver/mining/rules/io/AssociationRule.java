@@ -22,7 +22,7 @@ import java.util.Map;
  * Represents an association rule x -> y, such that z = x U y
  */
 @AllArgsConstructor
-public class AssociationRule {
+public class AssociationRule implements IRule {
 
     /**
      * Items in the antecedent of the rule

@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.rules.measure;
 
-import io.gitlab.chaver.mining.rules.io.AssociationRule;
+import io.gitlab.chaver.mining.rules.io.IRule;
 
 /**
  * Measure to compute for an association rule
@@ -28,5 +28,5 @@ public interface RuleMeasure {
      * @param nbTransactions number of transactions in the database
      * @return the value of the measure for this association rule
      */
-    double compute(AssociationRule rule, int nbTransactions);
+    double compute(IRule rule, int nbTransactions);
 }
