@@ -1,6 +1,6 @@
 # Data-mining
 
-This repository contains the source code that was used in the experiments of the following paper : *Vernerey et al. - Threshold-free Pattern Mining Meets Multi-Objective Optimization: Application to Association Rules* ([IJCAI 2022](https://ijcai-22.org/)). Supplementary material is available in the `paper` folder.
+This repository contains the source code that was used in the experiments of the following paper : *Vernerey et al. - Threshold-free Pattern Mining Meets Multi-Objective Optimization: Application to Association Rules* ([IJCAI 2022](https://www.ijcai.org/proceedings/2022/0261)). Supplementary material is available in the `paper` folder.
 
 ## Requirements
 
@@ -38,7 +38,7 @@ The following constraints are available :
 - **CoverSize** : given an integer variable `f` and pattern `x`, ensures that `f = freq(x)` (see *Schaus et al. - CoverSize : A Global Constraint for Frequency-Based Itemset Mining*)
 - **Generator** : ensures that a pattern `x` is a generator (see *Belaid et al. - Constraint Programming for Association Rules*)
 
-Note that a `jar` file with all the required dependencies is available [here](https://drive.google.com/file/d/1o5BQb7ATyW_Ha6bJgJPYfd9BZBedQIXJ/view?usp=sharing) if you really don't want to use Maven.
+Note that a `jar` file with all the required dependencies is available [here](https://s01.oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=io.gitlab.chaver&a=data-mining&v=1.0.0&e=jar&c=jar-with-dependencies) if you really don't want to use Maven.
 
 ## Usage
 
@@ -81,6 +81,27 @@ Using the dataset `iris`, extract the Minimal Non-Redundant (`mnr`) rules, w.r.t
 ```bash
 ./run arm -d data/iris.dat --rt mnr --sky iris_sky_fac.json -s -p
 ```
+
+## Citation
+
+```
+@inproceedings{ijcai2022p0261,
+  title     = {Threshold-free Pattern Mining Meets Multi-Objective Optimization: Application to Association Rules},
+  author    = {Vernerey, Charles and Loudni, Samir and Aribi, Noureddine and Lebbah, Yahia},
+  booktitle = {Proceedings of the Thirty-First International Joint Conference on
+               Artificial Intelligence, {IJCAI-22}},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},
+  editor    = {Lud De Raedt},
+  pages     = {1880--1886},
+  year      = {2022},
+  month     = {7},
+  note      = {Main Track},
+  doi       = {10.24963/ijcai.2022/261},
+  url       = {https://doi.org/10.24963/ijcai.2022/261},
+}
+```
+
+
 
 ## Questions/suggestions
 
