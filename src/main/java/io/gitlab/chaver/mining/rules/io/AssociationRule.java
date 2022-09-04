@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents an association rule x -> y, such that z = x U y
+ * Represents an association rule with antecedent x and consequent y, such that z = x U y
  */
 @AllArgsConstructor
 public class AssociationRule implements IRule {

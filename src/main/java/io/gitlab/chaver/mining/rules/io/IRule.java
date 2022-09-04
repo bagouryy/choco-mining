@@ -10,7 +10,7 @@
 package io.gitlab.chaver.mining.rules.io;
 
 /**
- * Represents an association rule x -> y, such that z = x U y
+ * Represents an association rule with antecedent x and consequent y, such that z = x U y
  */
 public interface IRule {
 

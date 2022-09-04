@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Class used for storing association rules x -> y
+ * Class used for storing association rules with x as antecedent and y as consequent
  */
 @AllArgsConstructor
 public class ArMonitor implements IMonitorSolution {
