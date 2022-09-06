@@ -27,7 +27,7 @@ Now you can add a new dependency to your project :
 <dependency>
     <groupId>io.gitlab.chaver</groupId>
     <artifactId>data-mining</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
