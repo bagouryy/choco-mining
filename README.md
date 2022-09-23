@@ -15,13 +15,7 @@ If you have Maven installed in your computer, you can simply build the project w
 mvn clean package
 ```
 
-If you are interested by using some constraints in your own project, you can use the following command :
-
-```bash
-mvn clean install
-```
-
-Now you can add a new dependency to your project :
+If you are interested by using some constraints in your own project, you can add a new maven dependency :
 
 ```xml
 <dependency>
@@ -38,7 +32,7 @@ The following constraints are available :
 - **CoverSize** : given an integer variable `f` and pattern `x`, ensures that `f = freq(x)` (see *Schaus et al. - CoverSize : A Global Constraint for Frequency-Based Itemset Mining*)
 - **Generator** : ensures that a pattern `x` is a generator (see *Belaid et al. - Constraint Programming for Association Rules*)
 
-Note that a `jar` file with all the required dependencies is available [here](https://s01.oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=io.gitlab.chaver&a=data-mining&v=1.0.0&e=jar&c=jar-with-dependencies) if you really don't want to use Maven.
+Note that a `jar` file with all the required dependencies is available [here](https://s01.oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=io.gitlab.chaver&a=data-mining&v=1.0.1&e=jar&c=jar-with-dependencies) if you really don't want to use Maven.
 
 ## Usage
 
