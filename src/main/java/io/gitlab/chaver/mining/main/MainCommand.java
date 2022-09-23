@@ -22,7 +22,7 @@ public class MainCommand {
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new MainCommand())
-                .setExecutionExceptionHandler(new ProblemExceptionHandlerProd())
+                //.setExecutionExceptionHandler(new ProblemExceptionHandlerProd())
                 .execute(args);
         System.exit(exitCode);
     }
