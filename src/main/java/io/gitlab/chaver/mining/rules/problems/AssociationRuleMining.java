@@ -1,7 +1,7 @@
 /*
  * This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
  *
- * Copyright (c) 2022, IMT Atlantique
+ * Copyright (c) 2023, IMT Atlantique
  *
  * Licensed under the MIT license.
  *
