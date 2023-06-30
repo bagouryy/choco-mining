@@ -1,2 +1,0 @@
-#!/bin/bash
-java -jar target/data-mining-1.0.1-jar-with-dependencies.jar $*

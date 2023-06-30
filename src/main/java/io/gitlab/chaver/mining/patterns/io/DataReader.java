@@ -48,6 +48,10 @@ public abstract class DataReader {
         this.noClasses = noClasses;
     }
 
+    public DataReader(String dataPath) {
+        this(dataPath, 0, true);
+    }
+
     /**
      * Read files which contain transactions and values of items
      * @return a database object with the data

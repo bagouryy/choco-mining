@@ -17,12 +17,12 @@ import io.gitlab.chaver.mining.patterns.measure.attribute.Min;
 import io.gitlab.chaver.mining.patterns.measure.pattern.Freq;
 import io.gitlab.chaver.mining.patterns.measure.pattern.Freq1;
 import io.gitlab.chaver.mining.patterns.measure.pattern.MaxFreq;
-
 import org.chocosolver.solver.Model;
 
-public class MeasureComputerFactory {
+public class MeasureComputerFactory implements IMeasureComputerFactory {
 
-    public static MeasureComputer getMeasureComputer(Measure m, Database database, Model model) {
+    @Override
+    public MeasureComputer getMeasureComputer(Measure m, Database database, Model model) {
         if (m.getClass() == Freq.class) {
             return new FreqComputer(database, model);
         }

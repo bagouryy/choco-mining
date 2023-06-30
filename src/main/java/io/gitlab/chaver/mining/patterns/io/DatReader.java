@@ -34,6 +34,10 @@ public class DatReader extends DataReader {
         super(dataPath, numberOfValueMeasures, noClasses);
     }
 
+    public DatReader(String dataPath) {
+        super(dataPath);
+    }
+
     private void loadItems() throws IOException {
         String line;
         Set<Integer> itemSet = new HashSet<>();

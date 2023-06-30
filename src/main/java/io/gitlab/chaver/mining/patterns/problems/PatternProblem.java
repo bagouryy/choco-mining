@@ -14,6 +14,9 @@ import io.gitlab.chaver.chocotools.problem.ChocoProblem;
 import io.gitlab.chaver.chocotools.problem.SetUpException;
 import io.gitlab.chaver.chocotools.search.loop.monitors.SolutionRecorderMonitor;
 import io.gitlab.chaver.chocotools.util.ISolutionProvider;
+import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
+import io.gitlab.chaver.mining.patterns.constraints.FrequentSubs;
+import io.gitlab.chaver.mining.patterns.constraints.InfrequentSupers;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
@@ -23,7 +26,7 @@ import io.gitlab.chaver.mining.patterns.measure.attribute.*;
 import io.gitlab.chaver.mining.patterns.measure.operand.MeasureOperand;
 import io.gitlab.chaver.mining.patterns.measure.pattern.*;
 import io.gitlab.chaver.mining.patterns.search.loop.monitors.SkypatternMonitor;
-import io.gitlab.chaver.mining.patterns.search.strategy.selectors.variables.MinCov;
+import io.gitlab.chaver.mining.patterns.search.strategy.selectors.variables.*;
 import io.gitlab.chaver.mining.patterns.util.MeasureListConverter;
 import io.gitlab.chaver.mining.patterns.util.PatternCreator;
 import io.gitlab.chaver.mining.patterns.util.TransactionGetter;
@@ -41,6 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static io.gitlab.chaver.mining.patterns.measure.MeasureFactory.*;
@@ -63,8 +67,14 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
     @Option(names = "--lmin", description = "Min length of the pattern (default : ${DEFAULT-VALUE})",
             defaultValue = "1")
     private int lengthMin;
+    @Option(names = "--lmax", description = "Max length of the pattern")
+    private int lengthMax;
     @Option(names = "--fmin", description = "Min freq of the pattern (default : ${DEFAULT-VALUE})", defaultValue = "1")
     protected int freqMin;
+    @Option(names = "--rfmin", description = "Relative Min freq of the pattern")
+    protected double relativeFreqMin;
+    @Option(names = "--fmax", description = "Max freq of the pattern")
+    private int freqMax;
     @Option(names = "--no-infgr", description = "No infinite growth-rate")
     private boolean noInfiniteGr;
     @Option(names = "--trans", description = "Save transactions of the patterns")
@@ -77,6 +87,15 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
     private String requiredItemsPath;
     @Option(names = "--lab", description = "File path with the label of items (each line corresponds to one item)")
     private String labelsPath;
+    @Option(names = "--mii", description = "Threshold for Minimal Infrequent Itemsets (MII) search")
+    private int miiSearch = -1;
+    @Option(names = "--strict", description = "Strict pareto dominance")
+    private boolean strictPareto;
+    @Option(names = "--lds", description = "LDS search")
+    private int lds;
+    @Option(names = "--ifmax", description = "Max frequency of items (absolute value)")
+    private int itemsMaxFreq;
+
     private String[] labels;
 
     private List<Measure> allMeasures;
@@ -100,6 +119,8 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
         if (measureVars.containsKey(m.getId())) return;
         int num = (m instanceof AttributeMeasure) ? ((AttributeMeasure) m).getNum() : -1;
         if (m.getClass() == Freq.class) freqVar();
+        else if (m.getClass() == FreqNeg.class) freqNegVar();
+        else if (m.getClass() == Freq1.class) freq1Var();
         else if (m.getClass() == Length.class) lengthVar();
         else if (m.getClass() == Area.class) areaVar();
         else if (m.getClass() == MaxFreq.class) maxFreqVar();
@@ -111,9 +132,18 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
         else throw new BuildModelException("Can't create var for this measure : " + m);
     }
 
+    private void freqNegVar() {
+        String id = freqNeg().getId();
+        IntVar freqNeg = measureVars.get(freq().getId()).neg().intVar();
+        measureVars.put(id, freqNeg);
+    }
+
     protected void lengthVar() {
         String lengthId = length().getId();
         IntVar length = model.intVar(lengthId, lengthMin, database.getNbItems());
+        if (lengthMax > 0) {
+            length.le(lengthMax).post();
+        }
         model.count(1, items, length).post();
         measureVars.put(lengthId, length);
     }
@@ -250,6 +280,9 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
                 .orElse(-1);
         try {
             database = new DatReader(dataPath, idxValMeasure + 1, noClasses).readFiles();
+            if (relativeFreqMin > 0) {
+                freqMin = (int) (database.getNbTransactions() * relativeFreqMin);
+            }
             Map<Integer, Integer> itemsMap = database.getItemsMap();
             if (zeroItemsPath != null) {
                 zeroItems = Files
@@ -280,24 +313,66 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
 
     private void requiredItemsConstraint() {
         if (requiredItems == null) return;
-        model.or(Arrays.stream(requiredItems).mapToObj(i -> items[i]).toArray(BoolVar[]::new)).post();
+        IntVar nbVar = model.intVar(1, items.length);
+        model.among(nbVar, Arrays.stream(requiredItems).mapToObj(i -> items[i]).toArray(BoolVar[]::new), new int[]{1}).post();
+        //model.or(Arrays.stream(requiredItems).mapToObj(i -> items[i]).toArray(BoolVar[]::new)).post();
+    }
+
+    private void miiConstraint() {
+        if (miiSearch > -1) {
+            model.post(new Constraint("FrequentSubs", new FrequentSubs(database, miiSearch, items)));
+            model.post(new Constraint("InfrequentSupers", new InfrequentSupers(database, miiSearch, items)));
+            IntVar freq = measureVars.get(freq().getId());
+            freq.lt(miiSearch).post();
+            model.post(new Constraint("CoverSize", new CoverSize(database, freq, items)));
+        }
     }
 
     @Override
     public void buildModel() throws BuildModelException {
         itemVars();
+        itemsMaxFreqConstraint();
         zeroItemsConstraint();
         requiredItemsConstraint();
         freqVar();
+        maxFreqConstraint();
         lengthVar();
         for (Measure m : allMeasures) createMeasureVar(m);
         closedConstraint();
+        miiConstraint();
         plugSearchMonitor();
         solver.setSearch(Search.intVarSearch(
                 new MinCov(model, database),
                 new IntDomainMin(),
                 items
         ));
+        configureLDS();
+    }
+
+    private void configureLDS() {
+        if (lds == 0) {
+            return;
+        }
+        solver.setNoGoodRecordingFromSolutions(items);
+        solver.setLDS(lds);
+    }
+
+    private void maxFreqConstraint() {
+        if (freqMax > 0) {
+            measureVars.get(freq().getId()).le(freqMax).post();
+        }
+    }
+
+    private void itemsMaxFreqConstraint() {
+        if (itemsMaxFreq > 0) {
+            int[] itemFreq = database.computeItemFreq();
+            BoolVar[] requiredItems = IntStream
+                    .range(0, itemFreq.length)
+                    .filter(i -> itemFreq[i] <= itemsMaxFreq)
+                    .mapToObj(i -> items[i])
+                    .toArray(BoolVar[]::new);
+            model.or(requiredItems).post();
+        }
     }
 
     private void plugSearchMonitor() {
@@ -311,7 +386,7 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
         }
         else {
             IntVar[] obj = skypatternMeasures.stream().map(m -> measureVars.get(m.getId())).toArray(IntVar[]::new);
-            SkypatternMonitor monitor = new SkypatternMonitor(obj, creator, false);
+            SkypatternMonitor monitor = new SkypatternMonitor(obj, creator, strictPareto);
             model.post(new Constraint("Pareto", monitor));
             solver.plugMonitor(monitor);
             solutionProvider = monitor;

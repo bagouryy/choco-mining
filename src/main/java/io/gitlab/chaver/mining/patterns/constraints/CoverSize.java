@@ -62,39 +62,42 @@ public class CoverSize extends Propagator<IntVar> {
 
     @Override
     public void propagate(int evtmask) throws ContradictionException {
-        int nU = lastIndexFree.get();
-        for (int i = nU - 1; i >= firstIndex; i--) {
+        int nFree = lastIndexFree.get();
+        // Compute the cover of x+
+        for (int i = nFree - 1; i >= firstIndex; i--) {
             int idx = freeItems[i];
             if (items[idx].isInstantiated()) {
-                nU = removeItem(i, nU, idx);
+                nFree = removeItem(i, nFree, idx);
                 if (items[idx].isInstantiatedTo(1)) {
                     cover.and(idx);
                 }
             }
         }
-        for (int i = nU - 1; i >= firstIndex; i--) {
+        // Remove all items i such that freq(x+ U i) < freq.LB
+        for (int i = nFree - 1; i >= firstIndex; i--) {
             int idx = freeItems[i];
             if (cover.andCount(idx) < freq.getLB()) {
-                nU = removeItem(i, nU, idx);
+                nFree = removeItem(i, nFree, idx);
                 items[idx].setToFalse(this);
             }
         }
+        // Compute bounds of freq variable : freq.LB = freq(x+ U x*) and freq.UB = freq(x+)
         cover.resetMask();
-        for (int i = nU - 1; i >= firstIndex; i--) {
+        for (int i = nFree - 1; i >= firstIndex; i--) {
             int idx = freeItems[i];
             cover.andMask(idx);
         }
         int freqLB = cover.maskCardinality();
         int freqUB = cover.cardinality();
         freq.updateBounds(freqLB, freqUB, this);
-        lastIndexFree.set(nU);
+        lastIndexFree.set(nFree);
     }
 
-    private int removeItem(int i, int nU, int idx) {
-        int lastU = nU - 1;
-        freeItems[i] = freeItems[lastU];
-        freeItems[lastU] = idx;
-        return lastU;
+    private int removeItem(int i, int nFree, int idx) {
+        int lastFree = nFree - 1;
+        freeItems[i] = freeItems[lastFree];
+        freeItems[lastFree] = idx;
+        return lastFree;
     }
 
     @Override
