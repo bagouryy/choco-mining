@@ -45,6 +45,15 @@ Multiple constraints oriented to itemset mining have been proposed in the recent
 
 ![Summary of constraints implemented with Choco-mining \label{fig:app}](app.drawio.png)
 
+We propose a new CP library called Choco-Mining that is based on Choco-solver [@prud2022choco]. The architecture of the library is illustrated in \autoref{fig:app} Multiple constraints for Itemset Mining are implemented in Choco-Mining:
+
+- CoverSize[@SchausAG17]: Given a frequency variable $f$, ensures that $f = freq(x)$.
+- CoverClosure[@SchausAG17]: Ensures that $x$ is closed w.r.t. the frequency.
+- AdequateClosure[@ijcai2022p0261]: Given a set of measures $M$, ensures that $x$ is closed w.r.t. $M$.
+- FrequentSubs[@Belaid2BL19]: Given a frequency threshold $s$, ensures that $\forall y \subset x : freq(y) \le s$.
+- InfrequentSupers[@Belaid2BL19]: Given a frequency threshold $s$, ensures that $\forall y \supset x : freq(y) < s$.
+- Generator[@BelaidBL19]: Ensures that $x$ is a generator.
+- ClosedDiversity[@HienLALLOZ20]: Given a history of itemsets $\mathcal{H}$, a diversity threshold $j_{max}$ and a minimum frequency threshold $s$, ensures that $x$ is a diverse pattern.  
 
 # Acknowledgements
 

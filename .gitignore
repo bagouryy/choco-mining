@@ -170,3 +170,6 @@ $RECYCLE.BIN/
 *.lnk
 
 .archive
+paper/media/
+paper/paper.jats
+paper/paper.pdf
