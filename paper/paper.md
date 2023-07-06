@@ -43,7 +43,7 @@ Multiple constraints oriented to itemset mining have been proposed in the recent
 
 # Features and Functionality
 
-![Summary of constraints implemented with Choco-mining \label{fig:app}](app.drawio.png)
+![Summary of constraints implemented with Choco-mining \label{fig:app}](app.svg)
 
 We propose a new CP library called Choco-Mining that is based on Choco-solver [@prud2022choco]. The architecture of the library is illustrated in \autoref{fig:app}. Multiple constraints for Itemset Mining are implemented in Choco-Mining. Each constraint takes as input a transactional database $D$ and a vector of Boolean variables $x$ that represents the searched itemset(i.e. $x[i] = 1$ means that item $i$ belongs to the searched itemset). The following constraints are available in Choco-Mining:
 
