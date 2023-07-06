@@ -39,21 +39,70 @@ Itemset mining is a fundamental data mining technique that aims to extract meani
 In recent years, CP has been proven to be effective for modelling and solving Itemset Mining problems. The main advantage of using CP rather than specialised approaches for solving itemset mining problems is that the user can easily add custom constraints without having to modify the underlying system. Multiple constraints have been proposed in the literature to model and solve several itemset mining problems.
 
 # Statement of need
-Multiple constraints oriented to itemset mining have been proposed in the recent years. However, there exists few alternatives that gather all the constraints in the same place. A user interested by using constraints in its own project would have to implement them from scratch, which takes time and may lead to bugs. To alleviate the burden of the user, we propose a new CP module that gathers multiple reference constraints for itemset mining in the same place using Choco-solver, a reference CP library.
+Multiple constraints oriented to itemset mining have been proposed in the recent years. However, there exists few alternatives that gather all the constraints in the same place. A user interested by using constraints in its own project would have to implement them from scratch, which takes time and may lead to bugs. To alleviate the burden of the user, we propose a new CP library that gathers multiple reference constraints for itemset mining in the same place.
 
 # Features and Functionality
 
 ![Summary of constraints implemented with Choco-mining \label{fig:app}](app.drawio.png)
 
-We propose a new CP library called Choco-Mining that is based on Choco-solver [@prud2022choco]. The architecture of the library is illustrated in \autoref{fig:app} Multiple constraints for Itemset Mining are implemented in Choco-Mining:
+We propose a new CP library called Choco-Mining that is based on Choco-solver [@prud2022choco]. The architecture of the library is illustrated in \autoref{fig:app}. Multiple constraints for Itemset Mining are implemented in Choco-Mining. Each constraint takes as input a transactional database $D$ and a vector of Boolean variables $x$ that represents the searched itemset(i.e. $x[i] = 1$ means that item $i$ belongs to the searched itemset). The following constraints are available in Choco-Mining:
 
-- CoverSize[@SchausAG17]: Given a frequency variable $f$, ensures that $f = freq(x)$.
-- CoverClosure[@SchausAG17]: Ensures that $x$ is closed w.r.t. the frequency.
-- AdequateClosure[@ijcai2022p0261]: Given a set of measures $M$, ensures that $x$ is closed w.r.t. $M$.
+- CoverSize[@SchausAG17]: Given an integer variable $f$, ensures that $f = freq(x)$.
+- CoverClosure[@SchausAG17]: Ensures that $x$ is closed w.r.t. the frequency, i.e. $\nexists ~y \supset x: freq(x) = freq(y)$.
+- AdequateClosure[@ijcai2022p0261]: Given a set of measures $M$, ensures that $x$ is closed w.r.t. $M$, i.e. $\nexists~ y \supset x$ such that for all $m \in M : m(x) = m(y)$.
 - FrequentSubs[@Belaid2BL19]: Given a frequency threshold $s$, ensures that $\forall y \subset x : freq(y) \le s$.
 - InfrequentSupers[@Belaid2BL19]: Given a frequency threshold $s$, ensures that $\forall y \supset x : freq(y) < s$.
-- Generator[@BelaidBL19]: Ensures that $x$ is a generator.
-- ClosedDiversity[@HienLALLOZ20]: Given a history of itemsets $\mathcal{H}$, a diversity threshold $j_{max}$ and a minimum frequency threshold $s$, ensures that $x$ is a diverse pattern.  
+- Generator[@BelaidBL19]: Ensures that $x$ is a generator, i.e. $\nexists ~y \subset x : freq(y) = freq(x)$.
+- ClosedDiversity[@HienLALLOZ20]: Given a history of itemsets $\mathcal{H}$, a diversity threshold $j_{max}$ and a minimum frequency threshold $s$, ensures that $x$ is a diverse pattern (i.e. $\nexists ~y \in \mathcal{H} : jaccard(x,y) \ge j_{max}$).
+
+We can model different problems using these constraints. \autoref{fig:app} shows examples of problems (in blue) with the associated constraints (in red):
+
+- Frequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$.
+- Closed Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$ and $\nexists ~y \supset x : freq(x) = freq(y)$.
+- Skypattern Mining: Given a set of measures $M$, find all the itemsets $x$ such that $\nexists ~y \succ_M x$.
+- Maximal Frequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$ and $\forall ~y \supset x : freq(y) < s$.
+- Minimal Infrequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) < s$ and $\forall ~y \subset x : freq(y) \ge s$.
+- Generator Mining: Find all the itemsets $x$ such that $\nexists ~y \subset x : freq(y) = freq(x)$.
+- Association Rule Mining: Find all the association rules $x \Rightarrow y$ that respect the constraints specified by the user.
+- Diverse Itemset Mining: Given a diversity threshold $j_{max}$ and a minimum frequency threshold $s$, find all the diverse itemsets.
+
+# Running example
+
+Here is an example of code for the Closed Itemset Mining Problem using our library Choco-Mining:
+
+```java
+String dataPath = "src/test/resources/contextPasquier99/contextPasquier99.dat";
+Database database = new DatReader(dataPath).readFiles();
+Model model = new Model("Closed Itemset Mining");
+IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
+IntVar length = model.intVar("length", 1, database.getNbItems());
+BoolVar[] x = model.boolVarArray("x", database.getNbItems());
+model.sum(x, "=", length).post();
+model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+model.post(new Constraint("Cover Closure", new CoverClosure(database, x)));
+List<Pattern> closedPatterns = new LinkedList<>();
+while (model.getSolver().solve()) {
+    int[] itemset = IntStream.range(0, x.length)
+            .filter(i -> x[i].getValue() == 1)
+            .map(i -> database.getItems()[i])
+            .toArray();
+    closedPatterns.add(new Pattern(itemset, new int[]{freq.getValue()}));
+}
+System.out.println("List of closed itemsets for " +
+        "the dataset contextPasquier99 w.r.t. M = {freq(x)} :");
+for (Pattern closed : closedPatterns) {
+    System.out.println(Arrays.toString(closed.getItems()) +
+            ", freq=" + closed.getMeasures()[0]);
+}
+```
+
+The goal is to find all the closed itemsets with a minimum frequency of 1. We start by reading the transactional database using the method `readFiles()` of the `DatReader` instance. Then, we create a model with Choco-solver. Variables `freq` and `length` are created to store respectively the frequency and the length of the itemset. A boolean array of variables `x` represents the itemset, where `x[i] = 1` indicates that item `i` belongs to the itemset. Finally, we post three constraints:
+
+- `model.sum(x, "=", length).post()`: ensures that $length = \sum x$.
+- `model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)))`: ensures that $freq = freq(x)$.
+- `model.post(new Constraint("Cover Closure", new CoverClosure(database, x)))`: ensures that $x$ is closed w.r.t. the frequency.
+
+After finding all the solutions, we print them to the user.
 
 # Acknowledgements
 

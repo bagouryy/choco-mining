@@ -75,7 +75,7 @@ public class ExampleSkypatternMining {
                 x
         ));
         while (solver.solve());
-        System.out.println("List of skypatterns w.r.t. {freq(x),area(x),allconf(x)} :");
+        System.out.println("List of skypatterns w.r.t. {freq(x),area(x),allconf(x)} for the dataset contextPasquier99:");
         for (Solution solution : maximizer.getParetoFront()) {
             int[] itemset = IntStream
                     .range(0, x.length)
