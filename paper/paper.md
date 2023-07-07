@@ -23,51 +23,46 @@ bibliography: paper.bib
 
 # Summary
 
-~~Constraint Programming (CP) is a powerful tool for solving many different type of problems.
-Recent years have seen many advances in the area, with the development of many different constraints.
-In this paper, we introduce a new library for solving Itemset Mining problems with Choco Solver.~~
-
 While traditional data mining techniques have been used extensively for discovering patterns in databases, they are not always suitable for incorporating user-specified constraints. To overcome this issue, new research have began connecting data mining to Constraint Programming (CP).  Such fertilization leads to a flexible way to tackle data mining tasks , such as itemset mining or association rules. In this paper, we introduce a new library for solving itemset mining problems with Choco Solver.              
 
 ## Constraint Programming (CP)
-Constraint Programming (CP) is a powerful paradigm for solving combinatorial optimization problems. It provides a declarative approach to problem-solving by defining a set of variables, domains, and constraints that capture the problem's requirements. CP solvers explore the space of possible solutions systematically, leveraging powerful search algorithms and constraint propagation techniques to efficiently find valid solutions. The flexibility of CP allows for modeling a wide range of problems, including scheduling, resource allocation, planning, and configuration. Its ability to handle complex constraints, discrete variables, and global properties makes it particularly suitable for tackling real-world problems. CP has demonstrated remarkable success in various domains, offering a high-level modeling language and a diverse set of solving techniques. Its integration with other optimization methods and technologies further enhances its applicability and effectiveness. Overall, Constraint Programming is a valuable tool for addressing challenging optimization problems, offering a powerful approach to problem modeling, solving, and decision support.
+Constraint Programming (CP) is a powerful paradigm for solving combinatorial optimization problems[@rossi2006handbook]. It provides a declarative approach to problem-solving by defining a set of variables, domains, and constraints that capture the problem's requirements. CP solvers explore the space of possible solutions systematically, leveraging powerful search algorithms and constraint propagation techniques to efficiently find valid solutions. The flexibility of CP allows for modeling a wide range of problems, including scheduling, resource allocation, planning, and configuration. Its ability to handle complex constraints, discrete variables, and global properties makes it particularly suitable for tackling real-world problems. CP has demonstrated remarkable success in various domains, offering a high-level modeling language and a diverse set of solving techniques. Its integration with other optimization methods and technologies further enhances its applicability and effectiveness. Overall, Constraint Programming is a valuable tool for addressing challenging optimization problems, offering a powerful approach to problem modeling, solving, and decision support.
 
 ## Itemset Mining
 
-Itemset mining is a fundamental data mining technique that aims to extract meaningful associations and patterns from large datasets. It involves the identification of sets of items(called itemsets or patterns) that frequently co-occur or exhibit significant relationships. By uncovering these itemsets, researchers gain valuable insights into the underlying structure and dependencies within the data. Itemset mining finds applications in various domains, including market basket analysis, bioinformatics, and social network analysis.
+Itemset mining is a fundamental data mining technique that aims to extract meaningful associations and patterns from large datasets. It involves the identification of sets of items(called itemsets or patterns) that frequently co-occur or exhibit significant relationships. By uncovering these itemsets, researchers gain valuable insights into the underlying structure and dependencies within the data. Itemset mining finds applications in various domains, including market basket analysis[@agrawal1994fast], bioinformatics[@martinez2008genminer], and social network analysis[@erlandsson2016finding].
 
 ## CP and Itemset Mining
 
-In recent years, CP has been proven to be effective for modelling and solving itemset mining problems. The main advantage of using CP rather than specialised approaches for solving itemset mining problems is that the user can easily add custom constraints without having to modify the underlying system. Multiple user-specified constraints have been proposed in the literature to model and solve several itemset mining problems.
+In recent years, CP has been proven to be effective for modelling and solving itemset mining problems[@guns2011itemset;@lazaar2016global;@ugarte2017skypattern]. The main advantage of using CP rather than specialised approaches for solving itemset mining problems is that the user can easily add custom constraints without having to modify the underlying system. Multiple user-specified constraints have been proposed in the literature to model and solve several itemset mining problems.
 
 # Statement of need
-Having a generic prototypical approach that can be parameterized to declaratively and efficiently discover patterns of interest using the available constraint solving tools is crucial to promote the use of CP for itemset mining. Multiple constraints designed for different mining tasks ~~oriented to itemset mining~~ have been proposed in the recent years. However, there exists few alternatives that bring all of these constraints together in ~~gather all the constraints in~~ the same place. A user interested by using constraints in its own project would have to implement them from scratch, which takes time and may lead to bugs. To alleviate the burden of the user, we propose a new CP library that gathers multiple reference constraints for itemset mining in the same place.
+Having a generic prototypical approach that can be parameterized to declaratively and efficiently discover patterns of interest using the available constraint solving tools is crucial to promote the use of CP for itemset mining. Multiple constraints designed for different mining tasks have been proposed in the recent years. However, there exists few alternatives that bring all of these constraints together in the same place. A user interested by using constraints in its own project would have to implement them from scratch, which takes time and may lead to bugs. To alleviate the burden of the user, we propose a new CP library that gathers multiple reference constraints for itemset mining in the same place.
 
 # Features and Functionality
 
 ![Summary of constraints implemented with Choco-mining \label{fig:app}](app.svg)
 
-We propose a new CP library called **Choco-Mining** that is based on Choco-solver [@prud2022choco]. The architecture of the library is illustrated in \autoref{fig:app}. As we can see, multiple constraints dedicated to different itemset mining are availabe ~~implemented~~ in Choco-Mining library. Each constraint takes as input a transactional database $D$ and a vector of Boolean variables $x$ used for representing itemsets, where $x[i]$ represents the presence/absence of the item $i$ in the searched itemset. ~~(i.e., $x[i] = 1$ means that item $i$ belongs to the searched itemset).~~ These constraints are then used to define the problem at hand in terms of constraint programming. For example, 
-of readily available constraint solvingThe following constraints are available in Choco-Mining:
+We propose a new CP library called **Choco-Mining** that is based on Choco-solver [@prud2022choco] and was used in the experiments of [@ijcai2022p0261]. The architecture of the library is illustrated in \autoref{fig:app}. As we can see, multiple constraints dedicated to different itemset mining tasks are available in Choco-Mining library. Each constraint takes as input a transactional database $D$ and a vector of Boolean variables $x$ used for representing itemsets, where $x[i]$ represents the presence/absence of the item $i$ in the searched itemset. These constraints are then used to define the problem at hand in terms of constraint programming. The following constraints are available in Choco-Mining:
 
-- CoverSize[@SchausAG17]: Given an integer variable $f$, ensures that $f = freq(x)$.
-- CoverClosure[@SchausAG17]: Ensures that $x$ is closed w.r.t. the frequency, i.e. $\nexists ~y \supset x: freq(x) = freq(y)$.
-- AdequateClosure[@ijcai2022p0261]: Given a set of measures $M$, ensures that $x$ is closed w.r.t. $M$, i.e. $\nexists~ y \supset x$ such that for all $m \in M : m(x) = m(y)$.
-- FrequentSubs[@Belaid2BL19]: Given a frequency threshold $s$, ensures that $\forall y \subset x : freq(y) \le s$.
-- InfrequentSupers[@Belaid2BL19]: Given a frequency threshold $s$, ensures that $\forall y \supset x : freq(y) < s$.
-- Generator[@BelaidBL19]: Ensures that $x$ is a generator, i.e. $\nexists ~y \subset x : freq(y) = freq(x)$.
-- ClosedDiversity[@HienLALLOZ20]: Given a history of itemsets $\mathcal{H}$, a diversity threshold $j_{max}$ and a minimum frequency threshold $s$, ensures that $x$ is a diverse pattern (i.e. $\nexists ~y \in \mathcal{H} : jaccard(x,y) \ge j_{max}$).
+- $CoverSize_{D}(x,f)$[@SchausAG17]: Given an integer variable $f$ that represents the frequency (noted $freq$) of an itemset $x$, ensures that $f = freq(x)$.
+- $CoverClosure_{D}(x)$[@SchausAG17]: Ensures that $x$ is closed w.r.t. the frequency, i.e. $\nexists ~y \supset x: freq(x) = freq(y)$.
+- $AdequateClosure_{D,M}(x)$[@ijcai2022p0261]: Given a set of measures $M$, ensures that $x$ is closed w.r.t. $M$, i.e. $\nexists~ y \supset x$ such that for all $m \in M : m(x) = m(y)$.
+- $FrequentSubs_{D,s}(x)$[@Belaid2BL19]: Given a frequency threshold $s$, ensures that all the subsets of $x$ are frequent, i.e. $\forall y \subset x : freq(y) \ge s$.
+- $InfrequentSupers_{D,s}(x)$[@Belaid2BL19]: Given a frequency threshold $s$, ensures that all the supersets of $x$ are infrequent, i.e. $\forall y \supset x : freq(y) < s$.
+- $Generator_{D}(x)$[@BelaidBL19]: Ensures that $x$ is a generator, i.e. $\nexists ~y \subset x : freq(y) = freq(x)$.
+- $ClosedDiversity_{D,\mathcal{H},j,s}(x)$[@HienLALLOZ20]: Given a history of itemsets $\mathcal{H}$, a diversity threshold $j$ and a minimum frequency threshold $s$, ensures that $x$ is a diverse itemset (i.e. $\nexists ~y \in \mathcal{H} : jaccard(x,y) \ge j$), $x$ is closed w.r.t. the frequency and $freq(x) \ge s$.
 
 We can model different problems using these constraints. \autoref{fig:app} shows examples of problems (in blue) with the associated constraints (in red):
 
 - Frequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$.
 - Closed Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$ and $\nexists ~y \supset x : freq(x) = freq(y)$.
-- Skypattern Mining: Given a set of measures $M$, find all the itemsets $x$ such that $\nexists ~y \succ_M x$.
+- Skypattern Mining: Given a set of measures $M$, find all the itemsets $x$ such that there exists no other itemset $y$ that dominates $x$. We say that $y$ dominates $x$ iff $\forall ~m \in M : m(y) \ge m(x)$ and $\exists ~m \in M : m(y) > m(x)$.
 - Maximal Frequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$ and $\forall ~y \supset x : freq(y) < s$.
 - Minimal Infrequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) < s$ and $\forall ~y \subset x : freq(y) \ge s$.
 - Generator Mining: Find all the itemsets $x$ such that $\nexists ~y \subset x : freq(y) = freq(x)$.
 - Association Rule Mining: Find all the association rules $x \Rightarrow y$ that respect the constraints specified by the user.
-- Diverse Itemset Mining: Given a diversity threshold $j_{max}$ and a minimum frequency threshold $s$, find all the diverse itemsets.
+- Diverse Itemset Mining: Given a diversity threshold $j$ and a minimum frequency threshold $s$, find all the diverse itemsets that are closed w.r.t. the frequency and such that $freq(x) \ge s$.
 
 # Running example
 
