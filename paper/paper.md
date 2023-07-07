@@ -23,9 +23,11 @@ bibliography: paper.bib
 
 # Summary
 
-Constraint Programming (CP) is a powerful tool for solving many different type of problems.
+~~Constraint Programming (CP) is a powerful tool for solving many different type of problems.
 Recent years have seen many advances in the area, with the development of many different constraints.
-In this paper, we introduce a new library for solving Itemset Mining problems with Choco Solver.             
+In this paper, we introduce a new library for solving Itemset Mining problems with Choco Solver.~~
+
+While traditional data mining techniques have been used extensively for discovering patterns in databases, they are not always suitable for incorporating user-specified constraints. To overcome this issue, new research have began connecting data mining to Constraint Programming (CP).  Such fertilization leads to a flexible way to tackle data mining tasks , such as itemset mining or association rules.  In this paper, we introduce a new library for solving itemset mining problems with Choco Solver.              
 
 ## Constraint Programming (CP)
 Constraint Programming (CP) is a powerful paradigm for solving combinatorial optimization problems. It provides a declarative approach to problem-solving by defining a set of variables, domains, and constraints that capture the problem's requirements. CP solvers explore the space of possible solutions systematically, leveraging powerful search algorithms and constraint propagation techniques to efficiently find valid solutions. The flexibility of CP allows for modeling a wide range of problems, including scheduling, resource allocation, planning, and configuration. Its ability to handle complex constraints, discrete variables, and global properties makes it particularly suitable for tackling real-world problems. CP has demonstrated remarkable success in various domains, offering a high-level modeling language and a diverse set of solving techniques. Its integration with other optimization methods and technologies further enhances its applicability and effectiveness. Overall, Constraint Programming is a valuable tool for addressing challenging optimization problems, offering a powerful approach to problem modeling, solving, and decision support.
