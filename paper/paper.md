@@ -47,7 +47,7 @@ Having a generic prototypical approach that can be parameterized to declarativel
 
 ![Summary of constraints implemented with Choco-mining \label{fig:app}](app.svg)
 
-We propose a new CP library called **Choco-Mining** that is based on Choco-solver [@prud2022choco]. The architecture of the library is illustrated in \autoref{fig:app}. Multiple constraints for Itemset Mining are implemented in Choco-Mining. Each constraint takes as input a transactional database $D$ and a vector of Boolean variables $x$ that represents the searched itemset(i.e. $x[i] = 1$ means that item $i$ belongs to the searched itemset). The following constraints are available in Choco-Mining:
+We propose a new CP library called **Choco-Mining** that is based on Choco-solver [@prud2022choco]. The architecture of the library is illustrated in \autoref{fig:app}. As we can see, multiple constraints dedicated to different itemset mining are availabe ~~implemented~~ in Choco-Mining library. Each constraint takes as input a transactional database $D$ and a vector of Boolean variables $x$ used for representing itemsets, where $x[i]$ represents the presence/absence of the item $i$ in the searched itemset. ~~(i.e., $x[i] = 1$ means that item $i$ belongs to the searched itemset).~~ The following constraints are available in Choco-Mining:
 
 - CoverSize[@SchausAG17]: Given an integer variable $f$, ensures that $f = freq(x)$.
 - CoverClosure[@SchausAG17]: Ensures that $x$ is closed w.r.t. the frequency, i.e. $\nexists ~y \supset x: freq(x) = freq(y)$.
