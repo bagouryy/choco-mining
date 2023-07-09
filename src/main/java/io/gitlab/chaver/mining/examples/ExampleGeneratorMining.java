@@ -9,8 +9,8 @@
  */
 package io.gitlab.chaver.mining.examples;
 
-import io.gitlab.chaver.mining.patterns.constraints.CoverClosure;
 import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
+import io.gitlab.chaver.mining.patterns.constraints.Generator;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
@@ -25,31 +25,31 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
- * Example of closed patterns mining (a closed pattern is an itemset which has no superset with the same frequency)
+ * Example of generators mining (a generator is an itemset which has no subset with the same frequency)
  */
-public class ExampleCoverClosure {
+public class ExampleGeneratorMining {
 
     public static void main(String[] args) throws Exception {
         String dataPath = "src/test/resources/contextPasquier99/contextPasquier99.dat";
-        Model model = new Model("cover closure test");
+        Model model = new Model("generator test");
         Database database = new DatReader(dataPath).readFiles();
         IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         model.sum(x, "=", length).post();
         model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
-        model.post(new Constraint("Cover Closure", new CoverClosure(database, x)));
-        List<Pattern> closedPatterns = new LinkedList<>();
+        model.post(new Constraint("Generator", new Generator(database, x)));
+        List<Pattern> generators = new LinkedList<>();
         while (model.getSolver().solve()) {
             int[] itemset = IntStream.range(0, x.length)
                     .filter(i -> x[i].getValue() == 1)
                     .map(i -> database.getItems()[i])
                     .toArray();
-            closedPatterns.add(new Pattern(itemset, new int[]{freq.getValue()}));
+            generators.add(new Pattern(itemset, new int[]{freq.getValue()}));
         }
-        System.out.println("List of closed patterns for the dataset contextPasquier99 w.r.t. M = {freq(x)} :");
-        for (Pattern closed : closedPatterns) {
-            System.out.println(Arrays.toString(closed.getItems()) + ", freq=" + closed.getMeasures()[0]);
+        System.out.println("List of generators for the dataset contextPasquier99:");
+        for (Pattern generator : generators) {
+            System.out.println(Arrays.toString(generator.getItems()) + ", freq=" + generator.getMeasures()[0]);
         }
     }
 }

@@ -1,2 +1,2 @@
-package:
-	mvn clean package
+install:
+	mvn clean install -Dgpg.skip=true

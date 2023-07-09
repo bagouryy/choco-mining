@@ -1,6 +1,6 @@
-# Data-mining
+# Choco-mining
 
-This repository contains the source code that was used in the experiments of the following paper : *Vernerey et al. - Threshold-free Pattern Mining Meets Multi-Objective Optimization: Application to Association Rules* ([IJCAI 2022](https://www.ijcai.org/proceedings/2022/0261)). Supplementary material is available in the `paper` folder.
+Choco-mining is a Java library for solving itemset mining problems that is based on [Choco-solver](https://github.com/chocoteam/choco-solver). This repository contains the source code that was used in the experiments of the following paper : *Vernerey et al. - Threshold-free Pattern Mining Meets Multi-Objective Optimization: Application to Association Rules* ([IJCAI 2022](https://www.ijcai.org/proceedings/2022/0261)). Supplementary material is available in the `paper` folder.
 
 ## Requirements
 
@@ -12,16 +12,16 @@ This repository contains the source code that was used in the experiments of the
 If you have Maven installed in your computer, you can simply build the project with the following command :
 
 ```bash
-mvn clean package
+make install
 ```
 
-If you are interested by using some constraints in your own project, you can add a new maven dependency :
+If you are interested by using some constraints in your own project, you can add a new maven dependency in the file `pom.xml` of your project :
 
 ```xml
 <dependency>
     <groupId>io.gitlab.chaver</groupId>
     <artifactId>data-mining</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
@@ -31,10 +31,13 @@ The following constraints are available :
 - **CoverClosure** : ensures that a pattern `x` is closed w.r.t. `{freq}` (see *Schaus et al. - CoverSize : A Global Constraint for Frequency-Based Itemset Mining*)
 - **CoverSize** : given an integer variable `f` and pattern `x`, ensures that `f = freq(x)` (see *Schaus et al. - CoverSize : A Global Constraint for Frequency-Based Itemset Mining*)
 - **Generator** : ensures that a pattern `x` is a generator (see *Belaid et al. - Constraint Programming for Association Rules*)
+- **FrequentSubs**: ensures that a pattern `x` has all its subsets frequent (see *Belaid et al. - Constraint Programming for Mining Borders of Frequent Itemsets*)
+- **InfrequentSupers**: ensures that a pattern `x` has all its supersets infrequent (see *Belaid et al. - Constraint Programming for Mining Borders of Frequent Itemsets*)
+- **Overlap**: a constraint inspired by ClosedDiversity(see *Hien et al. - A Relaxation-based Approach for Mining Diverse Closed Patterns*) that ensures that a pattern $x$ is diverse w.r.t. history of patterns (i.e. there exists no pattern `y` in the history such that `jaccard(x,y) > j`, where `j` is a diversity threshold specified by the user)
 
-Note that a `jar` file with all the required dependencies is available [here](https://s01.oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=io.gitlab.chaver&a=data-mining&v=1.0.1&e=jar&c=jar-with-dependencies) if you really don't want to use Maven.
+Detailed examples on how to use each constraint for solving different mining tasks are available [here](https://gitlab.com/chaver/data-mining/-/wikis/home).
 
-## Usage
+## Command-Line Usage
 
 You can run the jar file using the script `run` at the root of the project. 
 

@@ -28,6 +28,9 @@ import java.util.stream.IntStream;
 
 import static org.chocosolver.solver.search.strategy.Search.intVarSearch;
 
+/**
+ * Example of Minimal Non-Redundant association rule mining
+ */
 public class ExampleMNRsMining {
 
     static int[] getItemset(BoolVar[] x, Database database) {

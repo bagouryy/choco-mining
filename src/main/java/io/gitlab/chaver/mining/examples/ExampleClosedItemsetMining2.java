@@ -30,7 +30,7 @@ import static io.gitlab.chaver.mining.patterns.measure.MeasureFactory.*;
 /**
  * Example of closed patterns mining w.r.t. the set of measures M = {freq(x), max(x.freq)}
  */
-public class ExampleAdequateClosure {
+public class ExampleClosedItemsetMining2 {
 
     public static void main(String[] args) throws Exception {
         String dataPath = "src/test/resources/contextPasquier99/contextPasquier99.dat";
