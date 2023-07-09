@@ -1,7 +1,7 @@
 /*
  * This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
  *
- * Copyright (c) 2022, IMT Atlantique
+ * Copyright (c) 2023, IMT Atlantique
  *
  * Licensed under the MIT license.
  *
@@ -30,13 +30,13 @@ import static io.gitlab.chaver.mining.patterns.measure.MeasureFactory.*;
 /**
  * Example of closed patterns mining w.r.t. the set of measures M = {freq(x), max(x.freq)}
  */
-public class ExampleAdequateClosure {
+public class ExampleClosedItemsetMining2 {
 
     public static void main(String[] args) throws Exception {
         String dataPath = "src/test/resources/contextPasquier99/contextPasquier99.dat";
         List<Measure> measures = Arrays.asList(freq(), maxFreq());
         Model model = new Model("adequate closure test");
-        Database database = new DatReader(dataPath, 0, true).readFiles();
+        Database database = new DatReader(dataPath).readFiles();
         IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
@@ -61,6 +61,7 @@ public class ExampleAdequateClosure {
                     .toArray();
             closedPatterns.add(new Pattern(itemset, new int[]{freq.getValue(), maxFreq.getValue()}));
         }
+        System.out.println("List of closed patterns for the dataset contextPasquier99 w.r.t. M = {freq(x),max(x.freq)} :");
         for (Pattern closed : closedPatterns) {
             System.out.println(Arrays.toString(closed.getItems()) + ", freq=" + closed.getMeasures()[0] + ", maxFreq=" +
                     closed.getMeasures()[1]);

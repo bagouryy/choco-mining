@@ -1,7 +1,7 @@
 /*
  * This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
  *
- * Copyright (c) 2022, IMT Atlantique
+ * Copyright (c) 2023, IMT Atlantique
  *
  * Licensed under the MIT license.
  *
@@ -11,6 +11,7 @@ package io.gitlab.chaver.mining.patterns.constraints;
 
 import io.gitlab.chaver.mining.patterns.io.Database;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
+import io.gitlab.chaver.mining.patterns.measure.compute.IMeasureComputerFactory;
 import io.gitlab.chaver.mining.patterns.measure.compute.MeasureComputer;
 import lombok.Getter;
 import org.chocosolver.memory.IStateInt;
@@ -22,8 +23,6 @@ import org.chocosolver.util.ESat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
-
-import static io.gitlab.chaver.mining.patterns.measure.compute.MeasureComputerFactory.getMeasureComputer;
 
 /**
  * Given a database D and a set of preserving measures M', the AdequateClosure constraint ensures
@@ -42,13 +41,14 @@ public abstract class AdequateClosure extends Propagator<BoolVar> {
     private int nFree;
     private int nAbs;
 
-    public AdequateClosure(Database database, List<Measure> measures, BoolVar[] items) {
+    public AdequateClosure(Database database, List<Measure> measures, BoolVar[] items,
+                           IMeasureComputerFactory measureComputerFactory) {
         super(items);
         this.items = items;
         this.database = database;
         this.computers = new LinkedList<>();
         for (Measure m : measures) {
-            computers.add(getMeasureComputer(m, database, getModel()));
+            computers.add(measureComputerFactory.getMeasureComputer(m, database, getModel()));
         }
         this.freeItems = IntStream.range(0, database.getNbItems()).toArray();
         this.lastIndexFree = getModel().getEnvironment().makeInt(items.length);
@@ -91,6 +91,7 @@ public abstract class AdequateClosure extends Propagator<BoolVar> {
     public void propagate(int evtmask) throws ContradictionException {
         nFree = lastIndexFree.get();
         nAbs = lastIndexAbs.get();
+        // compute m(x+) for each measure m
         for (int i = nFree - 1; i >= firstIndex; i--) {
             int idx = freeItems[i];
             if (items[idx].isInstantiated()) {
@@ -127,11 +128,11 @@ public abstract class AdequateClosure extends Propagator<BoolVar> {
         }
     }
 
-    private int removeItem(int i, int nU, int idx) {
-        int lastU = nU - 1;
-        freeItems[i] = freeItems[lastU];
-        freeItems[lastU] = idx;
-        return lastU;
+    private int removeItem(int i, int nFree, int idx) {
+        int lastFree = nFree - 1;
+        freeItems[i] = freeItems[lastFree];
+        freeItems[lastFree] = idx;
+        return lastFree;
     }
 
     private int addItem(int nP, int idx) {

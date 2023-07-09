@@ -3,7 +3,7 @@
 
     This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
 
-    Copyright (c) 2022, IMT Atlantique
+    Copyright (c) 2023, IMT Atlantique
 
     Licensed under the MIT license.
 
@@ -17,7 +17,7 @@
 
     <groupId>io.gitlab.chaver</groupId>
     <artifactId>data-mining</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Data mining with Choco solver</description>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>org.choco-solver</groupId>
             <artifactId>choco-solver</artifactId>
-            <version>4.10.8</version>
+            <version>4.10.13</version>
         </dependency>
         <dependency>
             <groupId>io.gitlab.chaver</groupId>

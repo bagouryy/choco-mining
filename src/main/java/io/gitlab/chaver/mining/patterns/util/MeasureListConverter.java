@@ -1,7 +1,7 @@
 /*
  * This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
  *
- * Copyright (c) 2022, IMT Atlantique
+ * Copyright (c) 2023, IMT Atlantique
  *
  * Licensed under the MIT license.
  *
@@ -27,6 +27,8 @@ public class MeasureListConverter implements ITypeConverter<List<Measure>> {
         int i = 0;
         while (i < argSplit.length) {
             if (argSplit[i].equals("f")) measures.add(freq());
+            else if (argSplit[i].equals("z")) measures.add(freqNeg());
+            else if (argSplit[i].equals("1")) measures.add(freq1());
             else if (argSplit[i].equals("a")) measures.add(area());
             else if (argSplit[i].equals("g")) measures.add(growthRate());
             else if (argSplit[i].equals("c")) measures.add(allConf());

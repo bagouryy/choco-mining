@@ -1,7 +1,7 @@
 /*
  * This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
  *
- * Copyright (c) 2022, IMT Atlantique
+ * Copyright (c) 2023, IMT Atlantique
  *
  * Licensed under the MIT license.
  *
@@ -27,12 +27,12 @@ import java.util.stream.IntStream;
 /**
  * Example of generators mining (a generator is an itemset which has no subset with the same frequency)
  */
-public class ExampleGenerator {
+public class ExampleGeneratorMining {
 
     public static void main(String[] args) throws Exception {
         String dataPath = "src/test/resources/contextPasquier99/contextPasquier99.dat";
         Model model = new Model("generator test");
-        Database database = new DatReader(dataPath, 0, true).readFiles();
+        Database database = new DatReader(dataPath).readFiles();
         IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
@@ -47,6 +47,7 @@ public class ExampleGenerator {
                     .toArray();
             generators.add(new Pattern(itemset, new int[]{freq.getValue()}));
         }
+        System.out.println("List of generators for the dataset contextPasquier99:");
         for (Pattern generator : generators) {
             System.out.println(Arrays.toString(generator.getItems()) + ", freq=" + generator.getMeasures()[0]);
         }

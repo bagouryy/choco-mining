@@ -1,7 +1,7 @@
 /*
  * This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
  *
- * Copyright (c) 2022, IMT Atlantique
+ * Copyright (c) 2023, IMT Atlantique
  *
  * Licensed under the MIT license.
  *
@@ -46,6 +46,10 @@ public abstract class DataReader {
     public DataReader(String dataPath, int nbValueMeasures, boolean noClasses) {
         this(dataPath, nbValueMeasures);
         this.noClasses = noClasses;
+    }
+
+    public DataReader(String dataPath) {
+        this(dataPath, 0, true);
     }
 
     /**

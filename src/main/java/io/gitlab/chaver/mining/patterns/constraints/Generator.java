@@ -1,7 +1,7 @@
 /*
  * This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
  *
- * Copyright (c) 2022, IMT Atlantique
+ * Copyright (c) 2023, IMT Atlantique
  *
  * Licensed under the MIT license.
  *
@@ -85,6 +85,7 @@ public class Generator extends Propagator<BoolVar> {
                     subCover.and(dataset[idx2]);
                 }
             }
+            // fails if exists proper subset with the same cover
             if (subCover.cardinality() == coverSize) fails();
         }
         // remove all items that do not lead to a generator
@@ -99,22 +100,22 @@ public class Generator extends Propagator<BoolVar> {
         lastIndexPresent.set(nPres);
     }
 
-    private boolean isGenerator(int idx, int coverSize, int nP) {
+    private boolean isGenerator(int idx, int coverSize, int nPos) {
         int intersectionSize = cover.andCount(idx);
         if (coverSize == intersectionSize) {
             return true;
         }
-        for (int j = firstIndex; j < nP; j++) {
+        for (int j = firstIndex; j < nPos; j++) {
             if (subCovers.get(presentItems[j]).andCount(dataset[idx]) == intersectionSize) return true;
         }
         return false;
     }
 
-    private int removeItem(int i, int nU, int idx) {
-        int lastU = nU - 1;
-        freeItems[i] = freeItems[lastU];
-        freeItems[lastU] = idx;
-        return lastU;
+    private int removeItem(int i, int nFree, int idx) {
+        int lastFree = nFree - 1;
+        freeItems[i] = freeItems[lastFree];
+        freeItems[lastFree] = idx;
+        return lastFree;
     }
 
     private int addItem(int nPos, int idx) {
