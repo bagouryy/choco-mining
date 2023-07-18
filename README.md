@@ -1,6 +1,6 @@
 # Choco-Mining: A Java library for Itemset Mining with Choco Solver
 
-Choco-mining is a Java library for solving itemset mining problems that is based on [Choco-solver](https://github.com/chocoteam/choco-solver), which was utilized in the experiments of [VernereyLAL22]. Choco-solver is an open-source Java library designed for Constraint Programming (CP). One of the key benefits of utilizing CP in itemset mining problems is the flexibility it provides to add custom constraints to the problem without requiring modifications to the underlying system.
+Choco-Mining is a Java library for solving itemset mining problems that is based on [Choco-solver](https://github.com/chocoteam/choco-solver), which was utilized in the experiments of [VernereyLAL22]. Choco-solver is an open-source Java library designed for Constraint Programming (CP). One of the key benefits of utilizing CP in itemset mining problems is the flexibility it provides to add custom constraints to the problem without requiring modifications to the underlying system.
 
 ## Quick start example
 
@@ -87,6 +87,18 @@ After that, [create a new Maven project](https://maven.apache.org/guides/getting
 ```
 
 That's it ! You can now use all the constraints in your project.
+
+## Usage examples
+
+Examples on how to use the available constraints can be found in the [Wiki](https://gitlab.com/chaver/data-mining/-/wikis/home).
+
+## Support
+
+Please submit bug reports, questions and feature requests as [Issues](https://gitlab.com/chaver/data-mining/-/issues).
+
+## License
+
+Choco-Mining is licensed under the [MIT License](https://gitlab.com/chaver/data-mining/-/blob/master/LICENSE.txt).
 
 ## References
 
