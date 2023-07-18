@@ -1,21 +1,82 @@
-# Choco-mining
+# Choco-Mining: A Java library for Itemset Mining with Choco Solver
 
-Choco-mining is a Java library for solving itemset mining problems that is based on [Choco-solver](https://github.com/chocoteam/choco-solver). This repository contains the source code that was used in the experiments of the following paper : *Vernerey et al. - Threshold-free Pattern Mining Meets Multi-Objective Optimization: Application to Association Rules* ([IJCAI 2022](https://www.ijcai.org/proceedings/2022/0261)). Supplementary material is available in the `paper` folder.
+Choco-mining is a Java library for solving itemset mining problems that is based on [Choco-solver](https://github.com/chocoteam/choco-solver), which was utilized in the experiments of [VernereyLAL22]. Choco-solver is an open-source Java library designed for Constraint Programming (CP). One of the key benefits of utilizing CP in itemset mining problems is the flexibility it provides to add custom constraints to the problem without requiring modifications to the underlying system.
 
-## Requirements
+## Quick start example
 
-- Java 8+
-- Maven 3
+In this example, we want to extract all the closed itemsets (i.e. the ones that have no superset with the same frequency) with a minimum frequency of 1 and a minimum length of 1.
 
-## Installing
+```java
+// Read the transactional database
+TransactionalDatabase database = new DatReader("data/contextPasquier99.dat").read();
+// Create the Choco model
+Model model = new Model("Closed Itemset Mining");
+// Array of Boolean variables where x[i] == 1 represents the fact that i belongs to the itemset
+BoolVar[] x = model.boolVarArray("x", database.getNbItems());
+// Integer variable that represents the frequency of x with the bounds [1, nbTransactions]
+IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
+// Integer variable that represents the length of x with the bounds [1, nbItems]
+IntVar length = model.intVar("length", 1, database.getNbItems());
+// Ensures that length = sum(x)
+model.sum(x, "=", length).post();
+// Ensures that freq = frequency(x)
+model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+// Ensures that x is a closed itemset
+model.post(new Constraint("Cover Closure", new CoverClosure(database, x)));
+// Create a list to store all the closed itemsets
+List<Pattern> closedPatterns = new LinkedList<>();
+while (model.getSolver().solve()) {
+    int[] itemset = IntStream.range(0, x.length)
+            .filter(i -> x[i].getValue() == 1)
+            .map(i -> database.getItems()[i])
+            .toArray();
+    // Add the closed itemset with its frequency to the list
+    closedPatterns.add(new Pattern(itemset, new int[]{freq.getValue()}));
+}
+System.out.println("List of closed itemsets for the dataset contextPasquier99 w.r.t. freq(x):");
+// Print all the closed itemsets with their frequency
+for (Pattern closed : closedPatterns) {
+    System.out.println(Arrays.toString(closed.getItems()) +
+            ", freq=" + closed.getMeasures()[0]);
+}
+```
 
-If you have Maven installed in your computer, you can simply build the project with the following command :
+
+
+## Architecture of the library
+
+![Summary of constraints implemented with Choco-mining \label{fig:app}](paper/app.svg)
+
+The following constraints are available in Choco-Mining:
+
+- $CoverSize_{D}(x,f)$ [SchausAG17]: Given an integer variable $f$ that represents the frequency (noted $freq$) of an itemset $x$, the constraint ensures that $f = freq(x)$.
+- $CoverClosure_{D}(x)$ [SchausAG17]: The constraint ensures that $x$ is closed w.r.t. the frequency, i.e. $\nexists ~y \supset x: freq(x) = freq(y)$.
+- $AdequateClosure_{D,M}(x)$ [VernereyLAL22]: Given a set of measures $M$, the constraint ensures that $x$ is closed w.r.t. $M$, i.e. $\nexists~ y \supset x$ such that for all $m \in M : m(x) = m(y)$.
+- $FrequentSubs_{D,s}(x)$ [Belaid2BL19]: Given a frequency threshold $s$, the constraint ensures that all the subsets of $x$ are frequent, i.e. $\forall y \subset x : freq(y) \ge s$.
+- $InfrequentSupers_{D,s}(x)$ [Belaid2BL19]: Given a frequency threshold $s$, the constraint ensures that all the supersets of $x$ are infrequent, i.e. $\forall y \supset x : freq(y) < s$.
+- $Generator_{D}(x)$ [BelaidBL19]: The constraint ensures that $x$ is a generator, i.e. $\nexists ~y \subset x : freq(y) = freq(x)$.
+- $ClosedDiversity_{D,\mathcal{H},j,s}(x)$ [HienLALLOZ20]: Given a history of itemsets $\mathcal{H}$, a diversity threshold $j$ and a minimum frequency threshold $s$, the constraint ensures that $x$ is a diverse itemset (i.e. $\nexists ~y \in \mathcal{H} : jaccard(x,y) \ge j$), $x$ is closed w.r.t. the frequency and $freq(x) \ge s$.
+
+We can model different problems using these constraints. The above figure shows examples of mining tasks (in blue) with the constraints (in red) involved in their modelling:
+
+- Frequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$.
+- Closed Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$ and $\nexists ~y \supset x : freq(x) = freq(y)$.
+- Skypattern Mining: Given a set of measures $M$, find all the itemsets $x$ such that there exists no other itemset $y$ that dominates $x$. We say that $y$ dominates $x$ iff $\forall ~m \in M : m(y) \ge m(x)$ and $\exists ~m \in M : m(y) > m(x)$.
+- Maximal Frequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$ and $\forall ~y \supset x : freq(y) < s$.
+- Minimal Infrequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) < s$ and $\forall ~y \subset x : freq(y) \ge s$.
+- Generator Mining: Find all the itemsets $x$ such that $\nexists ~y \subset x : freq(y) = freq(x)$.
+- Association Rule Mining: Find all the association rules $x \Rightarrow y$ that respect the constraints specified by the user.
+- Diverse Itemset Mining: Given a diversity threshold $j$ and a minimum frequency threshold $s$, find all the diverse itemsets that are closed w.r.t. the frequency and such that $freq(x) \ge s$.
+
+## Installation
+
+To use the Choco-mining library, you need to have Java 8+ and [Maven 3](https://maven.apache.org/) installed on your computer. Then, you can simply install the library with the following command:
 
 ```bash
 make install
 ```
 
-If you are interested by using some constraints in your own project, you can add a new maven dependency in the file `pom.xml` of your project :
+After that, [create a new Maven project](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html) and add a new dependency:
 
 ```xml
 <dependency>
@@ -25,81 +86,12 @@ If you are interested by using some constraints in your own project, you can add
 </dependency>
 ```
 
-The following constraints are available :
+That's it ! You can now use all the constraints in your project.
 
-- **AdequateClosure** : ensures that a pattern `x` is closed w.r.t. a set of measures `M` (see *Vernerey et al. - Threshold-free Pattern Mining Meets Multi-Objective Optimization: Application to Association Rules*)
-- **CoverClosure** : ensures that a pattern `x` is closed w.r.t. `{freq}` (see *Schaus et al. - CoverSize : A Global Constraint for Frequency-Based Itemset Mining*)
-- **CoverSize** : given an integer variable `f` and pattern `x`, ensures that `f = freq(x)` (see *Schaus et al. - CoverSize : A Global Constraint for Frequency-Based Itemset Mining*)
-- **Generator** : ensures that a pattern `x` is a generator (see *Belaid et al. - Constraint Programming for Association Rules*)
-- **FrequentSubs**: ensures that a pattern `x` has all its subsets frequent (see *Belaid et al. - Constraint Programming for Mining Borders of Frequent Itemsets*)
-- **InfrequentSupers**: ensures that a pattern `x` has all its supersets infrequent (see *Belaid et al. - Constraint Programming for Mining Borders of Frequent Itemsets*)
-- **Overlap**: a constraint inspired by ClosedDiversity(see *Hien et al. - A Relaxation-based Approach for Mining Diverse Closed Patterns*) that ensures that a pattern $x$ is diverse w.r.t. history of patterns (i.e. there exists no pattern `y` in the history such that `jaccard(x,y) > j`, where `j` is a diversity threshold specified by the user)
+## References
 
-Detailed examples on how to use each constraint for solving different mining tasks are available [here](https://gitlab.com/chaver/data-mining/-/wikis/home).
-
-## Command-Line Usage
-
-You can run the jar file using the script `run` at the root of the project. 
-
-For each subcommand, you can list all the possible arguments using `-h` option, for example `./run closedsky -h`.
-
-For each subcommand, you can specify an option `--tl` to limit the time of the search. For example, `--tl 60` means that the search will stop after `60` seconds if not complete. The following subcommands are available :
-
-**closedsky/cpsky** : extract closed/sky patterns
-
-Using the dataset `iris`, extract the skypatterns w.r.t. the set of measures `{freq(x),area(x),gr(x),mean(x.val0),max(x.val1)}`, using the weak consistency version of AdequateClosure (`--wc`), print stats of the search (`-s`), print all the skypatterns (`-p`), save result in a file named `iris_sky_fagn0M1.json`. Note that the `gr` (growth-rate) of a pattern `x` is equal to `21474836` in case of infinite value.
-
-```bash
-./run closedsky -d data/iris.dat --skym fagn0M1 --wc -s -p --json iris_sky_fagn0M1.json
-```
-
-Using the dataset `iris`, extract the skypatterns w.r.t. the set of measures `{freq(x),area(x),aconf(x)}`, using the weak consistency version of AdequateClosure (`--wc`), ignore class of the transactions (`--nc`), with a min length of `2`, save result in a file named `iris_sky_fac.json`. Note that the `aconf` of a pattern `x` is multiplied by `10000`. For example, if the aconf of a pattern `x` is indicated to be `8526`, it means that the real aconf of this pattern is `0.8526`. Ignoring the class of the transactions means that the first item of each transaction will be taken into account in the mining (by default, they are considered as class of the transactions and they are ignored).
-
-```bash
-./run closedsky -d data/iris.dat --skym fac --wc --nc --lmin 2 --json iris_sky_fac.json
-```
-
-Using the dataset `iris`, extract the closed patterns w.r.t. the set of measures `{freq(x),min(x.val0)}`, print stats of the search (`-s`), print all the patterns (`-p`).
-
-```bash
-./run cpsky -d data/iris.dat --clom fm0 -s -p
-```
-
-**arm** : association rule mining
-
-Using the dataset `iris`, extract the Minimal Non-Redundant (`mnr`) rules, with a min relative frequency of `0.2`, a min confidence of `0.9`, print stats of the search (`-s`), print the rules (`-p`), save result in a file named `iris_mnr_20_90.json`. Note that if you want all the rules you can specify the option `--rt ar` instead.
-
-```bash
-./run arm -d data/iris.dat --rt mnr --rfmin 0.2 --cmin 0.9 -s -p --json iris_mnr_20_90.json
-```
-
-Using the dataset `iris`, extract the Minimal Non-Redundant (`mnr`) rules, w.r.t. skypatterns in the file `iris_sky_fac.json`, print stats of the search (`-s`), print the rules (`-p`).
-
-```bash
-./run arm -d data/iris.dat --rt mnr --sky iris_sky_fac.json -s -p
-```
-
-## Citation
-
-```
-@inproceedings{ijcai2022p0261,
-  title     = {Threshold-free Pattern Mining Meets Multi-Objective Optimization: Application to Association Rules},
-  author    = {Vernerey, Charles and Loudni, Samir and Aribi, Noureddine and Lebbah, Yahia},
-  booktitle = {Proceedings of the Thirty-First International Joint Conference on
-               Artificial Intelligence, {IJCAI-22}},
-  publisher = {International Joint Conferences on Artificial Intelligence Organization},
-  editor    = {Lud De Raedt},
-  pages     = {1880--1886},
-  year      = {2022},
-  month     = {7},
-  note      = {Main Track},
-  doi       = {10.24963/ijcai.2022/261},
-  url       = {https://doi.org/10.24963/ijcai.2022/261},
-}
-```
-
-
-
-## Questions/suggestions
-
-Feel free to contact me for any questions/suggestions related to this project : [@Charles Vernerey](mailto:charlesvernerey2@gmail.com).
+- **[SchausAG17]** [Schaus, P., Aoga, J. O., & Guns, T. (2017). Coversize: A global constraint for frequency-based itemset mining. In *Principles and Practice of Constraint Programming: 23rd International Conference, CP 2017, Melbourne, VIC, Australia, August 28–September 1, 2017, Proceedings 23* (pp. 529-546). Springer International Publishing](https://link.springer.com/chapter/10.1007/978-3-319-66158-2_34)
+- **[VernereyLAL22]** [Vernerey, C., Loudni, S., Aribi, N., & Lebbah, Y. (2022, July). Threshold-free pattern mining meets multi-objective optimization: Application to association rules. In *IJCAI-ECAI 2022-31ST INTERNATIONAL JOINT CONFERENCE ON ARTIFICIAL INTELLIGENCE*.](https://www.ijcai.org/proceedings/2022/0261)
+- **[Belaid2BL19]** [Belaid, M. B., Bessiere, C., & Lazaar, N. (2019, August). Constraint programming for mining borders of frequent itemsets. In *IJCAI 2019-28th International Joint Conference on Artificial Intelligence* (pp. 1064-1070).](https://hal-lirmm.ccsd.cnrs.fr/lirmm-02310629/)
+- **[BelaidBL19]** [Belaid, M. B., Bessiere, C., & Lazaar, N. (2019, May). Constraint programming for association rules. In *Proceedings of the 2019 SIAM International Conference on Data Mining* (pp. 127-135). Society for Industrial and Applied Mathematics.](https://epubs.siam.org/doi/abs/10.1137/1.9781611975673.15)
+- **[HienLALLOZ20]** [Hien, A., Loudni, S., Aribi, N., Lebbah, Y., Laghzaoui, M. E. A., Ouali, A., & Zimmermann, A. (2021). A relaxation-based approach for mining diverse closed patterns. In *Machine Learning and Knowledge Discovery in Databases: European Conference, ECML PKDD 2020, Ghent, Belgium, September 14–18, 2020, Proceedings, Part I* (pp. 36-54). Springer International Publishing.](https://link.springer.com/chapter/10.1007/978-3-030-67658-2_3)
