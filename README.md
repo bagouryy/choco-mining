@@ -53,7 +53,7 @@ The following constraints are available in Choco-Mining:
 - $CoverClosure_{D}(x)$ [SchausAG17]: The constraint ensures that $x$ is closed w.r.t. the frequency, i.e. $\nexists ~y \supset x: freq(x) = freq(y)$.
 - $AdequateClosure_{D,M}(x)$ [VernereyLAL22]: Given a set of measures $M$, the constraint ensures that $x$ is closed w.r.t. $M$, i.e. $\nexists~ y \supset x$ such that for all $m \in M : m(x) = m(y)$.
 - $FrequentSubs_{D,s}(x)$ [Belaid2BL19]: Given a frequency threshold $s$, the constraint ensures that all the subsets of $x$ are frequent, i.e. $\forall y \subset x : freq(y) \ge s$.
-- $InfrequentSupers_{D,s}(x)$ [Belaid2BL19]: Given a frequency threshold $s$, the constraint ensures that all the supersets of $x$ are infrequent, i.e. $\forall y \supset x$, we have $freq(y) < s$.
+- $InfrequentSupers_{D,s}(x)$ [Belaid2BL19]: Given a frequency threshold $s$, the constraint ensures that all the supersets of $x$ are infrequent, i.e. $\forall y \supset x : freq(y) ~\textless~ s$.
 - $Generator_{D}(x)$ [BelaidBL19]: The constraint ensures that $x$ is a generator, i.e. $\nexists ~y \subset x : freq(y) = freq(x)$.
 - $ClosedDiversity_{D,\mathcal{H},j,s}(x)$ [HienLALLOZ20]: Given a history of itemsets $\mathcal{H}$, a diversity threshold $j$ and a minimum frequency threshold $s$, the constraint ensures that $x$ is a diverse itemset (i.e. $\nexists ~y \in \mathcal{H} : jaccard(x,y) \ge j$), $x$ is closed w.r.t. the frequency and $freq(x) \ge s$.
 
