@@ -76,7 +76,7 @@ To use the Choco-mining library, you need to have Java 8+ and [Maven 3](https://
 make install
 ```
 
-After that, [create a new Maven project](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html) and add a new dependency:
+After that, [create a new Maven project](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html) and add a new dependency in the pom.xml file:
 
 ```xml
 <dependency>
