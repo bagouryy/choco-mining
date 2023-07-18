@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.util;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 
 import java.util.BitSet;
@@ -21,12 +21,12 @@ public class RSparseBitSetFacade implements BitSetFacade {
 
     public final static String TYPE = "sparse";
 
-    public RSparseBitSetFacade(Database database, Model model, int nbits) {
+    public RSparseBitSetFacade(TransactionalDatabase database, Model model, int nbits) {
         dataset = database.getDatasetAsLongArray();
         bitSet = new RSparseBitSet(model, nbits);
     }
 
-    public RSparseBitSetFacade(Database database, Model model, long[] words) {
+    public RSparseBitSetFacade(TransactionalDatabase database, Model model, long[] words) {
         dataset = database.getDatasetAsLongArray();
         bitSet = new RSparseBitSet(model, words);
     }

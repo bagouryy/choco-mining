@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.measure.compute;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.util.BitSetFacade;
 import io.gitlab.chaver.mining.patterns.util.ConstraintSettings;
 import org.chocosolver.solver.Model;
@@ -19,7 +19,7 @@ public abstract class CoverComputer extends MeasureComputer {
     private final BitSetFacade cover;
     protected final String type = ConstraintSettings.BITSET_TYPE;
 
-    public CoverComputer(Database database, Model model) {
+    public CoverComputer(TransactionalDatabase database, Model model) {
         super(database);
         cover = getBitSet(model);
     }

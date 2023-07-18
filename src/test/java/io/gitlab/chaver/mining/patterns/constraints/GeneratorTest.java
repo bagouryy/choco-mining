@@ -10,7 +10,7 @@
 package io.gitlab.chaver.mining.patterns.constraints;
 
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.constraints.Constraint;
@@ -29,7 +29,7 @@ public class GeneratorTest {
 
     private void testFindGenerators(String dataPath, int nbExpectedGenerator) throws IOException {
         Model model = new Model("generator test");
-        Database database = new DatReader(dataPath, 0, true).readFiles();
+        TransactionalDatabase database = new DatReader(dataPath, 0, true).read();
         IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());

@@ -23,7 +23,7 @@ bibliography: paper.bib
 
 # Summary
 
-While traditional data mining techniques have been used extensively for discovering patterns in databases, they are not always suitable for incorporating user-specified constraints. To overcome this issue, new research have began connecting data mining to Constraint Programming (CP).  Such fertilization leads to a flexible way to tackle data mining tasks , such as itemset or association rule mining. In this paper, we introduce a new library for solving itemset mining problems with Choco Solver.              
+While traditional data mining techniques have been used extensively for discovering patterns in databases, they are not always suitable for incorporating user-specified constraints. To overcome this issue, new research have began connecting Data Mining to Constraint Programming (CP).  Such fertilization leads to a flexible way to tackle data mining tasks, such as itemset or association rule mining. In this paper, we introduce a new library for solving itemset mining problems with Choco Solver.              
 
 ## Constraint Programming (CP)
 Constraint Programming (CP) is a powerful paradigm for solving combinatorial optimization problems [@rossi2006handbook]. It provides a declarative approach to problem-solving by defining a set of variables, domains, and constraints that capture the problem's requirements. CP solvers explore the space of possible solutions systematically, leveraging powerful search algorithms and constraint propagation techniques to efficiently find valid solutions. The flexibility of CP allows for modeling a wide range of problems, including scheduling [@baptiste2001constraint], resource allocation [@zhang2013constraint] and planning [@van1999cplan]. Its ability to handle complex constraints, discrete variables, and global properties makes it particularly suitable for tackling real-world problems. CP has demonstrated remarkable success in various domains, offering a high-level modeling language and a diverse set of solving techniques. Its integration with other optimization methods and technologies further enhances its applicability and effectiveness. Overall, Constraint Programming is a valuable tool for addressing challenging optimization problems, offering a powerful approach to problem modeling, solving, and decision support.
@@ -41,7 +41,7 @@ Having a generic prototypical approach that can be parameterized to declarativel
 
 # Features and Functionality
 
-![Summary of constraints implemented with Choco-mining \label{fig:app}](app.svg)
+![Summary of constraints implemented with Choco-Mining \label{fig:app}](app.svg)
 
 We propose a new CP library called **Choco-Mining** that is based on Choco-solver [@prud2022choco] and was used in the experiments of [@ijcai2022p0261]. The architecture of the library is illustrated in \autoref{fig:app}. As we can see, multiple constraints dedicated to different itemset mining tasks are available in Choco-Mining library. Each constraint takes as input a transactional database $D$ and a vector of Boolean variables $x$ used for representing itemsets, where $x[i]$ represents the presence/absence of the item $i$ in the searched itemset. These constraints are then used to define the problem at hand in terms of constraint programming. The following constraints are available in Choco-Mining:
 
@@ -69,32 +69,44 @@ We can model different problems using these constraints. \autoref{fig:app} shows
 We give below an example of CP encoding for the Closed Itemset Mining problem using our library Choco-Mining.
 
 ```java
-String dataPath = "src/test/resources/contextPasquier99/contextPasquier99.dat";
-Database database = new DatReader(dataPath).readFiles();
+// Read the transactional database
+TransactionalDatabase database = new DatReader("data/contextPasquier99.dat").read();
+// Create the Choco model
 Model model = new Model("Closed Itemset Mining");
-IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
-IntVar length = model.intVar("length", 1, database.getNbItems());
+/* Array of Boolean variables where x[i] == 1 represents the fact 
+that i belongs to the itemset */
 BoolVar[] x = model.boolVarArray("x", database.getNbItems());
+/* Integer variable that represents the frequency of x 
+with the bounds [1, nbTransactions] */
+IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
+/* Integer variable that represents the length of x 
+with the bounds [1, nbItems] */
+IntVar length = model.intVar("length", 1, database.getNbItems());
+// Ensures that length = sum(x)
 model.sum(x, "=", length).post();
+// Ensures that freq = frequency(x)
 model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+// Ensures that x is a closed itemset
 model.post(new Constraint("Cover Closure", new CoverClosure(database, x)));
+// Create a list to store all the closed itemsets
 List<Pattern> closedPatterns = new LinkedList<>();
 while (model.getSolver().solve()) {
     int[] itemset = IntStream.range(0, x.length)
             .filter(i -> x[i].getValue() == 1)
             .map(i -> database.getItems()[i])
             .toArray();
+    // Add the closed itemset with its frequency to the list
     closedPatterns.add(new Pattern(itemset, new int[]{freq.getValue()}));
 }
-System.out.println("List of closed itemsets for " +
-        "the dataset contextPasquier99 w.r.t. M = {freq(x)} :");
+System.out.println("List of closed itemsets for the dataset contextPasquier99:");
+// Print all the closed itemsets with their frequency
 for (Pattern closed : closedPatterns) {
     System.out.println(Arrays.toString(closed.getItems()) +
             ", freq=" + closed.getMeasures()[0]);
 }
 ```
 
-The goal is to find all the closed itemsets with a minimum frequency of 1. We start by reading the transactional database using the method `readFiles()` of the `DatReader` instance. Then, we create a model with Choco-solver. Variables `freq` and `length` are created to store respectively the frequency and the length of the itemset. A boolean array of variables `x` represents the itemset, where `x[i] = 1` indicates that item `i` belongs to the itemset. Finally, we post three constraints:
+The goal is to find all the closed itemsets with a minimum frequency of 1. We start by reading the transactional database using the method `read()` of the `DatReader` instance. Then, we create a model with Choco-solver. Variables `freq` and `length` are created to store respectively the frequency and the length of the itemset. A boolean array of variables `x` represents the itemset, where `x[i] = 1` indicates that item `i` belongs to the itemset. Finally, we post three constraints:
 
 - `model.sum(x, "=", length).post()`: ensures that $length = \sum x$.
 - `model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)))`: ensures that $freq = freq(x)$.

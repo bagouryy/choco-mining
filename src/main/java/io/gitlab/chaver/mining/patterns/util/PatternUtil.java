@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.util;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 
 import java.io.BufferedReader;
@@ -55,7 +55,7 @@ public class PatternUtil {
      * @param database database
      * @return the closed pattern associated to p
      */
-    public static int[] findClosedPattern(Pattern p, Database database) {
+    public static int[] findClosedPattern(Pattern p, TransactionalDatabase database) {
         BitSet cover = new BitSet(database.getNbTransactions());
         Map<Integer, Integer> itemIndexes = database.getItemsMap();
         cover.set(0, database.getNbTransactions());

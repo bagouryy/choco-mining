@@ -10,7 +10,7 @@
 package io.gitlab.chaver.mining.patterns.constraints;
 
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
@@ -40,7 +40,7 @@ public class CoverSizeTest {
                 .filter(p -> p.getMeasures()[0] >= freqLB)
                 .collect(Collectors.toSet());
         Model model = new Model("frequent test");
-        Database database = new DatReader(dataPath, 0, true).readFiles();
+        TransactionalDatabase database = new DatReader(dataPath, 0, true).read();
         IntVar freq = model.intVar("freq", freqLB, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());

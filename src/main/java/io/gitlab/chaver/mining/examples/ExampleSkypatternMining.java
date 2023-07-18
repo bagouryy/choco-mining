@@ -12,7 +12,7 @@ package io.gitlab.chaver.mining.examples;
 import io.gitlab.chaver.mining.patterns.constraints.AdequateClosureWC;
 import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
 import io.gitlab.chaver.mining.patterns.measure.operand.MeasureOperand;
 import io.gitlab.chaver.mining.patterns.search.strategy.selectors.variables.MinCov;
@@ -40,15 +40,15 @@ import static io.gitlab.chaver.mining.patterns.measure.MeasureFactory.*;
 public class ExampleSkypatternMining {
 
     public static void main(String[] args) throws Exception {
-        String dataPath = "src/test/resources/contextPasquier99/contextPasquier99.dat";
-        Database database = new DatReader(dataPath).readFiles();
+        TransactionalDatabase database = new DatReader("data/contextPasquier99.dat").read();
         Model model = new Model("skypattern mining");
         List<Measure> M = Arrays.asList(freq(), area(), allConf());
-        // Compute M' such that M is maximally M-skylineable
+        // Compute M' such that M is maximally M-skylineable (see Ugarte et al.)
         Set<Measure> M_prime = MeasureOperand.maxConvert(M);
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
+        // The area is the product between the frequency and the length
         IntVar area = freq.mul(length).intVar();
         model.sum(x, "=", length).post();
         int[] itemFreq = database.computeItemFreq();
@@ -57,18 +57,26 @@ public class ExampleSkypatternMining {
             // itemFreqVar[i] = itemFreq[i] if items[i] == 1 else 0
             model.arithm(x[i], "*", model.intVar(itemFreq[i]), "=", itemFreqVar[i]).post();
         }
-        String maxFreqId = maxFreq().getId();
-        IntVar maxFreq = model.intVar(maxFreqId, 0, database.getNbTransactions());
+        IntVar maxFreq = model.intVar(maxFreq().getId(), 0, database.getNbTransactions());
         // Compute max value of itemFreqVar
         model.max(maxFreq, itemFreqVar).post();
+        // Aconf is the frequency of x divided by the maximum frequency of its items
+        // Aconf is converted to an integer variable (multiplied by 10000)
         IntVar aconf = freq.mul(10000).div(maxFreq).intVar();
         model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+        // Ensures that x is closed w.r.t. M'
         model.post(new Constraint("Adequate Closure", new AdequateClosureWC(database, new ArrayList<>(M_prime), x)));
+        // We want to Pareto maximize {freq(x), area(x), aconf(x)}
         IntVar[] objectives = new IntVar[]{freq, area, aconf};
         ParetoMaximizer maximizer = new ParetoMaximizer(objectives);
+        // Post a Pareto constraint to ensure that the next itemset is not dominated
         model.post(new Constraint("Pareto", maximizer));
         Solver solver = model.getSolver();
         solver.plugMonitor(maximizer);
+        // We use the MinCov branching strategy to select the next item to branch on
+        // MinCov select the item i that has not been instantiated that minimises freq(x U {i})
+        // The value is first instancied to 0 (i.e. the item doesn't belong to the itemset)
+        // Using this strategy guarantees that we first get the itemset with the maximal frequency
         solver.setSearch(Search.intVarSearch(
                 new MinCov(model, database),
                 new IntDomainMin(),

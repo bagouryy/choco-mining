@@ -18,7 +18,7 @@ import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
 import io.gitlab.chaver.mining.patterns.constraints.FrequentSubs;
 import io.gitlab.chaver.mining.patterns.constraints.InfrequentSupers;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 import io.gitlab.chaver.mining.patterns.io.PatternProblemProperties;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
@@ -99,7 +99,7 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
     private String[] labels;
 
     private List<Measure> allMeasures;
-    protected Database database;
+    protected TransactionalDatabase database;
     private ISolutionProvider<Pattern> solutionProvider;
     private int[] zeroItems;
     private int[] requiredItems;
@@ -279,7 +279,7 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
                 .max()
                 .orElse(-1);
         try {
-            database = new DatReader(dataPath, idxValMeasure + 1, noClasses).readFiles();
+            database = new DatReader(dataPath, idxValMeasure + 1, noClasses).read();
             if (relativeFreqMin > 0) {
                 freqMin = (int) (database.getNbTransactions() * relativeFreqMin);
             }

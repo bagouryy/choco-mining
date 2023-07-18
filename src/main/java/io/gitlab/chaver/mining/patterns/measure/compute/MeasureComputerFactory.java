@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.measure.compute;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
 import io.gitlab.chaver.mining.patterns.measure.attribute.Max;
 import io.gitlab.chaver.mining.patterns.measure.attribute.Mean;
@@ -22,7 +22,7 @@ import org.chocosolver.solver.Model;
 public class MeasureComputerFactory implements IMeasureComputerFactory {
 
     @Override
-    public MeasureComputer getMeasureComputer(Measure m, Database database, Model model) {
+    public MeasureComputer getMeasureComputer(Measure m, TransactionalDatabase database, Model model) {
         if (m.getClass() == Freq.class) {
             return new FreqComputer(database, model);
         }

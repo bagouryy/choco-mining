@@ -10,7 +10,7 @@
 package io.gitlab.chaver.mining.rules.problems;
 
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
@@ -39,8 +39,8 @@ public class AssociationRuleMiningTest {
 
     private void testFindMnrSkypattern(String dataset, String extension, int nbAssociationRules) throws IOException {
         String dataPath = resourcesPath + dataset +"/" + dataset + extension;
-        Database database = new DatReader(dataPath, 0, true)
-                .readFiles();
+        TransactionalDatabase database = new DatReader(dataPath, 0, true)
+                .read();
         Map<String, String> constraints = new HashMap<>();
         constraints.put("sky", resourcesPath + dataset + "/sky_fat.json");
         AssociationRuleMining arm = new AssociationRuleMining();

@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.constraints;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
 import io.gitlab.chaver.mining.patterns.measure.compute.IMeasureComputerFactory;
 import io.gitlab.chaver.mining.patterns.measure.compute.MeasureComputerFactory;
@@ -20,12 +20,12 @@ import java.util.List;
 
 public class AdequateClosureDC extends AdequateClosure {
 
-    public AdequateClosureDC(Database database, List<Measure> measures, BoolVar[] items,
+    public AdequateClosureDC(TransactionalDatabase database, List<Measure> measures, BoolVar[] items,
                              IMeasureComputerFactory measureComputerFactory) {
         super(database, measures, items, measureComputerFactory);
     }
 
-    public AdequateClosureDC(Database database, List<Measure> measures, BoolVar[] items) {
+    public AdequateClosureDC(TransactionalDatabase database, List<Measure> measures, BoolVar[] items) {
         super(database, measures, items, new MeasureComputerFactory());
     }
 

@@ -52,7 +52,7 @@ public class BinReader extends DataReader {
     }
 
     @Override
-    public Database readFiles() throws IOException {
+    public TransactionalDatabase read() throws IOException {
         loadDataStats();
         BitSet[] data = new BitSet[nbItems];
         for (int i = 0; i < nbItems; i++) {
@@ -78,7 +78,7 @@ public class BinReader extends DataReader {
         }
         int[] items = IntStream.range(1, nbItems + 1).toArray();
         int[][] values = readValueFiles();
-        return new Database(items, values, noClasses ? 0 : maxClass, data, nbTransactions);
+        return new TransactionalDatabase(items, values, noClasses ? 0 : maxClass, data, nbTransactions);
     }
 
 }

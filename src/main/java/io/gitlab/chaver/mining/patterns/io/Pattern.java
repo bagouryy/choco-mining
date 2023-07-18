@@ -59,7 +59,7 @@ public class Pattern {
      * @param database database to consider
      * @return the string representation
      */
-    public String toString(List<String> measuresId, String[] labels, Database database) {
+    public String toString(List<String> measuresId, String[] labels, TransactionalDatabase database) {
         String[] itemLabels = Arrays.stream(items).mapToObj(Integer::toString).toArray(String[]::new);
         if (labels != null) {
             Map<Integer, Integer> itemMap = database.getItemsMap();

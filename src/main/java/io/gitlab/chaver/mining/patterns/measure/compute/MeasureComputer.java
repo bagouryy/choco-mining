@@ -10,13 +10,13 @@
 package io.gitlab.chaver.mining.patterns.measure.compute;
 
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 
 public abstract class MeasureComputer {
 
-    protected Database database;
+    protected TransactionalDatabase database;
 
-    public MeasureComputer(Database database) {
+    public MeasureComputer(TransactionalDatabase database) {
         this.database = database;
     }
 

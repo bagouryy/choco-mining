@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.constraints;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
 import io.gitlab.chaver.mining.patterns.measure.compute.IMeasureComputerFactory;
 import io.gitlab.chaver.mining.patterns.measure.compute.MeasureComputer;
@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
 public abstract class AdequateClosure extends Propagator<BoolVar> {
 
     private final BoolVar[] items;
-    private final Database database;
+    private final TransactionalDatabase database;
     private @Getter final List<MeasureComputer> computers;
     private final int[] freeItems;
     private final IStateInt lastIndexFree;
@@ -41,7 +41,7 @@ public abstract class AdequateClosure extends Propagator<BoolVar> {
     private int nFree;
     private int nAbs;
 
-    public AdequateClosure(Database database, List<Measure> measures, BoolVar[] items,
+    public AdequateClosure(TransactionalDatabase database, List<Measure> measures, BoolVar[] items,
                            IMeasureComputerFactory measureComputerFactory) {
         super(items);
         this.items = items;

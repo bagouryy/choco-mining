@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.rules.search.loop.monitors;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.rules.io.AssociationRule;
 import lombok.AllArgsConstructor;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
@@ -25,7 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ArMonitor implements IMonitorSolution {
 
-    private Database database;
+    private TransactionalDatabase database;
     private BoolVar[] x;
     private BoolVar[] y;
     private IntVar freqX;

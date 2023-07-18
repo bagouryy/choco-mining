@@ -9,14 +9,14 @@
  */
 package io.gitlab.chaver.mining.patterns.measure.compute;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 
 import java.util.Arrays;
 
 public class MinValComputer extends AttributeMeasureComputer {
 
-    public MinValComputer(Database database, Model model, int num) {
+    public MinValComputer(TransactionalDatabase database, Model model, int num) {
         super(database, model, num);
     }
 

@@ -11,7 +11,7 @@ package io.gitlab.chaver.mining.examples;
 
 import io.gitlab.chaver.mining.patterns.constraints.*;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
 public class ExampleMFIsMIIsMining {
 
     static BoolVar[] createModel(String dataPath, boolean mfi, int s) throws Exception {
-        Database database = new DatReader(dataPath).readFiles();
+        TransactionalDatabase database = new DatReader(dataPath).read();
         Model model = new Model();
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         int freqLB = mfi ? s : 0;

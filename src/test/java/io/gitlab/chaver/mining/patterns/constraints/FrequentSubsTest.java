@@ -10,7 +10,7 @@
 package io.gitlab.chaver.mining.patterns.constraints;
 
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
@@ -48,7 +48,7 @@ class FrequentSubsTest {
     }*/
 
     Model createModel(String dataPath, boolean mfi, int s) throws Exception {
-        Database database = new DatReader(dataPath, 0, true).readFiles();
+        TransactionalDatabase database = new DatReader(dataPath, 0, true).read();
         Model model = new Model();
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         int freqLB = mfi ? s : 0;
@@ -90,8 +90,8 @@ class FrequentSubsTest {
 
     @Test
     void testMFI() throws Exception {
-        Database database = new DatReader("src/test/resources/mfi/ex.dat", 0, true)
-                .readFiles();
+        TransactionalDatabase database = new DatReader("src/test/resources/mfi/ex.dat", 0, true)
+                .read();
         Model model = new Model("MFI");
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         int s = 3;
@@ -116,8 +116,8 @@ class FrequentSubsTest {
 
     @Test
     void testMII() throws Exception {
-        Database database = new DatReader("src/test/resources/mfi/ex.dat", 0, true)
-                .readFiles();
+        TransactionalDatabase database = new DatReader("src/test/resources/mfi/ex.dat", 0, true)
+                .read();
         Model model = new Model("MII");
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         int s = 3;

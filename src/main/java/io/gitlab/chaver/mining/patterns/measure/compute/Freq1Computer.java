@@ -9,14 +9,14 @@
  */
 package io.gitlab.chaver.mining.patterns.measure.compute;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.util.BitSetFacade;
 import io.gitlab.chaver.mining.patterns.util.BitSetFactory;
 import org.chocosolver.solver.Model;
 
 public class Freq1Computer extends CoverComputer {
 
-    public Freq1Computer(Database database, Model model) {
+    public Freq1Computer(TransactionalDatabase database, Model model) {
         super(database, model);
     }
 

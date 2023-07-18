@@ -63,7 +63,7 @@ public class DatReader extends DataReader {
     }
 
     @Override
-    public Database readFiles() throws IOException {
+    public TransactionalDatabase read() throws IOException {
         loadItems();
         BitSet[] data = new BitSet[nbItems];
         for (int i = 0; i < nbItems; i++) {
@@ -85,6 +85,6 @@ public class DatReader extends DataReader {
                 currentTransaction++;
             }
         }
-        return new Database(sortedItems, readValueFiles(), noClasses ? 0 : maxClass, data, nbTransactions);
+        return new TransactionalDatabase(sortedItems, readValueFiles(), noClasses ? 0 : maxClass, data, nbTransactions);
     }
 }

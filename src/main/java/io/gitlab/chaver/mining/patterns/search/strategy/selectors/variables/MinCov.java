@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.search.strategy.selectors.variables;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.util.BitSetFacade;
 import io.gitlab.chaver.mining.patterns.util.RSparseBitSetFacade;
 import org.chocosolver.solver.Model;
@@ -23,7 +23,7 @@ public class MinCov implements VariableSelector<IntVar> {
 
     private final BitSetFacade cover;
 
-    public MinCov(Model model, Database database) {
+    public MinCov(Model model, TransactionalDatabase database) {
         this.cover = new RSparseBitSetFacade(database, model, database.getNbTransactions());
     }
 

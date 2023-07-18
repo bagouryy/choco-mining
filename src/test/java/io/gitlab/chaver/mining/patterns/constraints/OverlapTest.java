@@ -10,7 +10,7 @@
 package io.gitlab.chaver.mining.patterns.constraints;
 
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
@@ -30,7 +30,7 @@ class OverlapTest {
 
     @Test
     void test() throws Exception {
-        Database database = new DatReader("src/test/resources/iris/iris.dat").readFiles();
+        TransactionalDatabase database = new DatReader("src/test/resources/iris/iris.dat").read();
         Model model = new Model("Diversity");
         int theta = (int) Math.round(database.getNbTransactions() * 0.01d);
         IntVar freq = model.intVar("freq", theta, database.getNbTransactions());

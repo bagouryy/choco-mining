@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.constraints;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.variables.BoolVar;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ import static io.gitlab.chaver.mining.patterns.measure.MeasureFactory.freq;
  */
 public class CoverClosure extends AdequateClosureWC {
 
-    public CoverClosure(Database database, BoolVar[] items) {
+    public CoverClosure(TransactionalDatabase database, BoolVar[] items) {
         super(database, Arrays.asList(freq()), items);
     }
 }

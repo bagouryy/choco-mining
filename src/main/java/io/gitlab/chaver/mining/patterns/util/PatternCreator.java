@@ -10,7 +10,7 @@
 package io.gitlab.chaver.mining.patterns.util;
 
 import io.gitlab.chaver.chocotools.util.Creator;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 import lombok.AllArgsConstructor;
 import org.chocosolver.solver.variables.BoolVar;
@@ -23,7 +23,7 @@ import java.util.stream.IntStream;
 @AllArgsConstructor
 public class PatternCreator implements Creator<Pattern> {
 
-    private Database database;
+    private TransactionalDatabase database;
     private BoolVar[] items;
     private List<String> allMeasuresId;
     private Map<String, IntVar> measureVars;

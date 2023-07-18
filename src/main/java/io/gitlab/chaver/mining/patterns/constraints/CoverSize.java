@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.constraints;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.util.BitSetFacade;
 import io.gitlab.chaver.mining.patterns.util.ConstraintSettings;
 import org.chocosolver.memory.IStateInt;
@@ -39,7 +39,7 @@ public class CoverSize extends Propagator<IntVar> {
     private final IStateInt lastIndexFree; // all items between [firstIndex, lastIndexFree[ are free
     private final int firstIndex; // min index (= nb of classes of the database)
 
-    public CoverSize(Database database, IntVar freq, BoolVar[] items) {
+    public CoverSize(TransactionalDatabase database, IntVar freq, BoolVar[] items) {
         super(ArrayUtils.concat(items, freq));
         cover = getBitSet(ConstraintSettings.BITSET_TYPE, database, model);
         this.freq = freq;
@@ -49,7 +49,7 @@ public class CoverSize extends Propagator<IntVar> {
         this.firstIndex = database.getNbClass();
     }
 
-    public CoverSize(Database database, IntVar freq, BoolVar[] items, boolean classCover) {
+    public CoverSize(TransactionalDatabase database, IntVar freq, BoolVar[] items, boolean classCover) {
         super(ArrayUtils.concat(items, freq));
         cover = classCover ? getBitSet1(ConstraintSettings.BITSET_TYPE, database, model) :
                 getBitSet(ConstraintSettings.BITSET_TYPE, database, model);

@@ -18,7 +18,7 @@ import io.gitlab.chaver.mining.patterns.constraints.CoverClosure;
 import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
 import io.gitlab.chaver.mining.patterns.constraints.Generator;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 import io.gitlab.chaver.mining.patterns.io.PatternProblemProperties;
 import io.gitlab.chaver.mining.rules.io.ArMeasuresView;
@@ -83,7 +83,7 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
     private List<RuleMeasure> measures = Arrays.asList(sup, rsup, conf, lift);
     private DecimalFormat measureFormat = new DecimalFormat("0.000");
 
-    private Database database;
+    private TransactionalDatabase database;
     private ArMonitor arMonitor;
     private Map<Set<Integer>, Set<Integer>> closedPatterns;
     private int[] zeroItemsAntecedent = new int[0];
@@ -98,7 +98,7 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
     @Override
     public void parseArgs() throws SetUpException {
         try {
-            database = new DatReader(dataPath, 0, noClasses).readFiles();
+            database = new DatReader(dataPath, 0, noClasses).read();
             if (relativeMinFreq != 0 && minFreq != 0) {
                 throw new SetUpException("--fmin and --rfmin are mutually exclusive (specify only one)");
             }

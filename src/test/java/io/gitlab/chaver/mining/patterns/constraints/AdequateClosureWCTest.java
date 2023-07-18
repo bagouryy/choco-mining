@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.constraints;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
 import org.chocosolver.solver.variables.BoolVar;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class AdequateClosureWCTest extends AdequateClosureTest {
 
     @Override
-    protected AdequateClosure getAdequateClosure(Database database, List<Measure> measures, BoolVar[] x) {
+    protected AdequateClosure getAdequateClosure(TransactionalDatabase database, List<Measure> measures, BoolVar[] x) {
         return new AdequateClosureWC(database, measures, x);
     }
 }

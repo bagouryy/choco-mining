@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.rules.io;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.rules.measure.RuleMeasure;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -59,7 +59,7 @@ public class AssociationRule implements IRule {
         return str.toString();
     }
 
-    private String convertToString(int[] pattern, String[] labels, Database database) {
+    private String convertToString(int[] pattern, String[] labels, TransactionalDatabase database) {
         if (pattern.length == 0) return "{}";
         Map<Integer, Integer> itemsMap = database.getItemsMap();
         StringBuilder str = new StringBuilder("{").append(labels[itemsMap.get(pattern[0])]);
@@ -101,7 +101,7 @@ public class AssociationRule implements IRule {
      * @param labels label of each item
      * @return corresponding string
      */
-    public String toString(Database database, String[] labels, List<RuleMeasure> measures, DecimalFormat measureFormat) {
+    public String toString(TransactionalDatabase database, String[] labels, List<RuleMeasure> measures, DecimalFormat measureFormat) {
         int nbTransactions = database.getNbTransactions();
         if (labels == null) {
             return convertToString(x) + " => " + convertToString(y) + ", measures=" +

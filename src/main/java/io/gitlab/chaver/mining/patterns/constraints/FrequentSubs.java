@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.constraints;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.util.SparseBitSet;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -32,10 +32,10 @@ public class FrequentSubs extends Propagator<IntVar> {
 
     private BoolVar[] x;
     private int freq;
-    private Database database;
+    private TransactionalDatabase database;
     private long[][] dataset;
 
-    public FrequentSubs(Database database, int freq, BoolVar[] x) {
+    public FrequentSubs(TransactionalDatabase database, int freq, BoolVar[] x) {
         super(x);
         this.freq = freq;
         this.x = x;

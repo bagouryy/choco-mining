@@ -13,7 +13,7 @@ import io.gitlab.chaver.mining.patterns.constraints.CoverClosure;
 import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
 import io.gitlab.chaver.mining.patterns.constraints.Overlap;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
@@ -33,10 +33,8 @@ import java.util.List;
 public class ExampleDiversity {
 
     public static void main(String[] args) throws Exception {
-        String dataPath = "data/iris.dat";
-        //String dataPath = "src/test/resources/contextPasquier99/contextPasquier99.dat";
-        Model model = new Model("Diversity");
-        Database database = new DatReader(dataPath).readFiles();
+        TransactionalDatabase database = new DatReader("data/iris.dat").read();
+        Model model = new Model("Diverse Itemset Mining");
         int theta = (int) Math.round(database.getNbTransactions() * 0.01d);
         IntVar freq = model.intVar("freq", theta, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
@@ -45,6 +43,8 @@ public class ExampleDiversity {
         model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
         model.post(new Constraint("Cover Closure", new CoverClosure(database, x)));
         double jmax = 0.05;
+        // Overlap is a global constraint that ensures that x is a diverse itemset
+        // i.e. there exists no y such that jaccard(x,y) > jmax
         Overlap overlap = new Overlap(database, x, jmax, theta);
         model.post(new Constraint("Overlap", overlap));
         Solver solver = model.getSolver();

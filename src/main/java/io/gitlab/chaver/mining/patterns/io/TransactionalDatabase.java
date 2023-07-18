@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Represents a transactional database where each transaction is a set of items
  */
-public class Database {
+public class TransactionalDatabase {
 
     /** Name of items */
     private int[] items;
@@ -32,7 +32,7 @@ public class Database {
     /** Map each item to its position in items array */
     private Map<Integer, Integer> itemsMap;
 
-    public Database(int[] items, int[][] values, int nbClass, BitSet[] verticalRepresentation, int nbTransactions) {
+    public TransactionalDatabase(int[] items, int[][] values, int nbClass, BitSet[] verticalRepresentation, int nbTransactions) {
         this.items = items;
         this.values = values;
         this.nbClass = nbClass;

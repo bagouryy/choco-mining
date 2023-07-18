@@ -12,7 +12,7 @@ package io.gitlab.chaver.mining.examples;
 import io.gitlab.chaver.mining.patterns.constraints.AdequateClosureDC;
 import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
 import org.chocosolver.solver.Model;
@@ -28,30 +28,37 @@ import java.util.stream.IntStream;
 import static io.gitlab.chaver.mining.patterns.measure.MeasureFactory.*;
 
 /**
- * Example of closed patterns mining w.r.t. the set of measures M = {freq(x), max(x.freq)}
+ * Example of closed pattern mining w.r.t. the set of measures M = {freq(x), max(x.freq)}
  */
 public class ExampleClosedItemsetMining2 {
 
     public static void main(String[] args) throws Exception {
-        String dataPath = "src/test/resources/contextPasquier99/contextPasquier99.dat";
-        List<Measure> measures = Arrays.asList(freq(), maxFreq());
-        Model model = new Model("adequate closure test");
-        Database database = new DatReader(dataPath).readFiles();
+        // Read the transactional database
+        TransactionalDatabase database = new DatReader("data/contextPasquier99.dat").read();
+        // Create the Choco model
+        Model model = new Model("Closed Itemset Mining with multiple measures");
+        // Create the variables
         IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         model.sum(x, "=", length).post();
+        // itemFreq[i] is equal to the frequency of item i in the database
         int[] itemFreq = database.computeItemFreq();
         IntVar[] itemFreqVar = model.intVarArray(database.getNbItems(), 0, database.getNbTransactions());
         for (int i = 0; i < database.getNbItems(); i++) {
             // itemFreqVar[i] = itemFreq[i] if items[i] == 1 else 0
             model.arithm(x[i], "*", model.intVar(itemFreq[i]), "=", itemFreqVar[i]).post();
         }
-        String maxFreqId = maxFreq().getId();
-        IntVar maxFreq = model.intVar(maxFreqId, 0, database.getNbTransactions());
+        // The maximum frequency of x represents the maximum frequency of its items
+        // For example, if x = ABC, freq(A) = 5, freq(B) = 7, freq(C) = 3, then maxFreq(x) = 7
+        IntVar maxFreq = model.intVar(maxFreq().getId(), 0, database.getNbTransactions());
         // Compute max value of itemFreqVar
         model.max(maxFreq, itemFreqVar).post();
         model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+        // The constraint AdequateClosure ensures that x is closed w.r.t. M
+        // Two versions are available : Domain Consistency (DC) and Weak Consistency (WC)
+        // Note that the WC version is more time efficient than the DC one
+        List<Measure> measures = Arrays.asList(freq(), maxFreq());
         model.post(new Constraint("Adequate Closure", new AdequateClosureDC(database, measures, x)));
         List<Pattern> closedPatterns = new LinkedList<>();
         while (model.getSolver().solve()) {
@@ -61,7 +68,7 @@ public class ExampleClosedItemsetMining2 {
                     .toArray();
             closedPatterns.add(new Pattern(itemset, new int[]{freq.getValue(), maxFreq.getValue()}));
         }
-        System.out.println("List of closed patterns for the dataset contextPasquier99 w.r.t. M = {freq(x),max(x.freq)} :");
+        System.out.println("List of closed patterns for the dataset contextPasquier99 w.r.t. M = {freq(x),max(x.freq)}:");
         for (Pattern closed : closedPatterns) {
             System.out.println(Arrays.toString(closed.getItems()) + ", freq=" + closed.getMeasures()[0] + ", maxFreq=" +
                     closed.getMeasures()[1]);

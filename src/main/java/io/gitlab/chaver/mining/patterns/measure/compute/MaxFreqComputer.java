@@ -9,14 +9,14 @@
  */
 package io.gitlab.chaver.mining.patterns.measure.compute;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 
 public class MaxFreqComputer extends IntMeasureComputer {
 
     private final int[] itemFreq;
 
-    public MaxFreqComputer(Database database, Model model) {
+    public MaxFreqComputer(TransactionalDatabase database, Model model) {
         super(database, model);
         itemFreq = database.computeItemFreq();
     }

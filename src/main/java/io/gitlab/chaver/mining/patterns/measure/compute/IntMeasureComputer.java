@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.measure.compute;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.Model;
 
@@ -17,7 +17,7 @@ public abstract class IntMeasureComputer extends MeasureComputer {
 
     protected IStateInt value;
 
-    public IntMeasureComputer(Database database, Model model) {
+    public IntMeasureComputer(TransactionalDatabase database, Model model) {
         super(database);
         this.value = model.getEnvironment().makeInt(getInitValue());
     }

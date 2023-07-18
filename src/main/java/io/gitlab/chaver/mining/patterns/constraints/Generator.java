@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.constraints;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.util.BitSetFacade;
 import io.gitlab.chaver.mining.patterns.util.ConstraintSettings;
 import io.gitlab.chaver.mining.patterns.util.SparseBitSet;
@@ -35,7 +35,7 @@ import static io.gitlab.chaver.mining.patterns.util.BitSetFactory.getBitSet;
 public class Generator extends Propagator<BoolVar> {
 
     private final BoolVar[] items;
-    private final Database database;
+    private final TransactionalDatabase database;
     private final long[][] dataset;
     private final BitSetFacade cover;
     private final Map<Integer, SparseBitSet> subCovers = new HashMap<>();
@@ -45,7 +45,7 @@ public class Generator extends Propagator<BoolVar> {
     private final IStateInt lastIndexPresent;
     private final int firstIndex;
 
-    public Generator(Database database, BoolVar[] items) {
+    public Generator(TransactionalDatabase database, BoolVar[] items) {
         super(items);
         this.items = items;
         this.database = database;

@@ -10,7 +10,7 @@
 package io.gitlab.chaver.mining.patterns.constraints;
 
 import io.gitlab.chaver.mining.patterns.io.DatReader;
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
@@ -30,12 +30,12 @@ public abstract class AdequateClosureTest {
 
     private final String resPath = "src/test/resources/";
 
-    protected abstract AdequateClosure getAdequateClosure(Database database, List<Measure> measures, BoolVar[] x);
+    protected abstract AdequateClosure getAdequateClosure(TransactionalDatabase database, List<Measure> measures, BoolVar[] x);
 
     private void testFindClosedPatterns(String dataPath, int nbExpectedClosed, List<Measure> measures, int nbValMeasures)
             throws IOException {
         Model model = new Model("closed test");
-        Database database = new DatReader(dataPath, nbValMeasures, true).readFiles();
+        TransactionalDatabase database = new DatReader(dataPath, nbValMeasures, true).read();
         IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());

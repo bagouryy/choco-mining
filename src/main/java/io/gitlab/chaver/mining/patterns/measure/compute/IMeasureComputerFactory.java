@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.measure.compute;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
 import org.chocosolver.solver.Model;
 
@@ -22,5 +22,5 @@ public interface IMeasureComputerFactory {
      * @param model Model
      * @return the associated measure computer
      */
-    MeasureComputer getMeasureComputer(Measure m, Database database, Model model);
+    MeasureComputer getMeasureComputer(Measure m, TransactionalDatabase database, Model model);
 }

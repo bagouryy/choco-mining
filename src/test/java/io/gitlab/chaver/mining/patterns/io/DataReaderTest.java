@@ -37,7 +37,7 @@ public class DataReaderTest {
     };
 
     private void testRead(DataReader reader, int nbClass, boolean[][] vRep, int[][] values) throws IOException {
-        Database d = reader.readFiles();
+        TransactionalDatabase d = reader.read();
         assertEquals(vRep.length, d.getVerticalRepresentation().length);
         for (int i = 0; i < vRep.length; i++) {
             for (int j = 0; j < vRep[i].length; j++) {

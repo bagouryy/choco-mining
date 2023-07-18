@@ -9,12 +9,12 @@
  */
 package io.gitlab.chaver.mining.patterns.measure.compute;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 
 public class MaxValComputer extends AttributeMeasureComputer {
 
-    public MaxValComputer(Database database, Model model, int num) {
+    public MaxValComputer(TransactionalDatabase database, Model model, int num) {
         super(database, model, num);
     }
 

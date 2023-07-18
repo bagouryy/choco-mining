@@ -9,7 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.constraints;
 
-import io.gitlab.chaver.mining.patterns.io.Database;
+import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
  */
 public class Overlap extends Propagator<IntVar> implements IMonitorSolution {
 
-    private Database database;
+    private TransactionalDatabase database;
     private BitSet[] verticalRepresentation;
     private BoolVar[] x;
     private double jmax;
@@ -38,7 +38,7 @@ public class Overlap extends Propagator<IntVar> implements IMonitorSolution {
     /** History of the cover of each itemset */
     private List<BitSet> coversHistory = new ArrayList<>();
 
-    public Overlap(Database database, BoolVar[] x, double jmax, int theta) {
+    public Overlap(TransactionalDatabase database, BoolVar[] x, double jmax, int theta) {
         super(x);
         this.database = database;
         this.verticalRepresentation = database.getVerticalRepresentation();
