@@ -61,9 +61,9 @@ We can model different problems using these constraints. The above figure shows 
 
 - Frequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$.
 - Closed Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$ and $\nexists ~y \supset x : freq(x) = freq(y)$.
-- Skypattern Mining: Given a set of measures $M$, find all the itemsets $x$ such that there exists no other itemset $y$ that dominates $x$. We say that $y$ dominates $x$ iff $\forall ~m \in M : m(y) \ge m(x)$ and $\exists ~m \in M : m(y) \text{\textgreater} m(x)$.
-- Maximal Frequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$ and $\forall ~y \supset x : freq(y) \text{\textless} s$.
-- Minimal Infrequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \text{\textless} s$ and $\forall ~y \subset x : freq(y) \ge s$.
+- Skypattern Mining: Given a set of measures $M$, find all the itemsets $x$ such that there exists no other itemset $y$ that dominates $x$. We say that $y$ dominates $x$ iff $\forall ~m \in M : m(y) \ge m(x)$ and $\exists ~m \in M : m(y)~ \text{\textgreater} ~m(x)$.
+- Maximal Frequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x) \ge s$ and $\forall ~y \supset x : freq(y)~ \text{\textless} ~s$.
+- Minimal Infrequent Itemset Mining: Given a threshold $s$, find all the itemsets $x$ such that $freq(x)~ \text{\textless} ~s$ and $\forall ~y \subset x : freq(y) \ge s$.
 - Generator Mining: Find all the itemsets $x$ such that $\nexists ~y \subset x : freq(y) = freq(x)$.
 - Association Rule Mining: Find all the association rules $x \Rightarrow y$ that respect the constraints specified by the user.
 - Diverse Itemset Mining: Given a diversity threshold $j$ and a minimum frequency threshold $s$, find all the diverse itemsets that are closed w.r.t. the frequency and such that $freq(x) \ge s$.
