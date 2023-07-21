@@ -9,13 +9,13 @@
  */
 package io.gitlab.chaver.mining.patterns.util;
 
-import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
+import io.gitlab.chaver.mining.patterns.constraints.PropCoverSize;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class ClosedSkyTransactionGetter implements TransactionGetter {
 
-    private CoverSize coverSize;
+    private PropCoverSize coverSize;
 
     @Override
     public int[] getTransactions() {

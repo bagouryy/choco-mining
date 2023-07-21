@@ -17,25 +17,21 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.ESat;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-
 /**
- * Given a vector x of Boolean variables and a threshold freq, ensures that all the subsets of x are frequent w.r.t. freq
+ * Given a vector of Boolean variables x and a threshold freq, ensures that all the supersets of x are infrequent w.r.t. freq
  * Fore more information, see Belaid et al. - Constraint Programming for Mining Borders of Frequent Itemsets
- *
  */
-public class FrequentSubs extends Propagator<IntVar> {
+public class PropInfrequentSupers extends Propagator<IntVar> {
 
     private BoolVar[] x;
     private int freq;
     private TransactionalDatabase database;
     private long[][] dataset;
 
-    public FrequentSubs(TransactionalDatabase database, int freq, BoolVar[] x) {
+    public PropInfrequentSupers(TransactionalDatabase database, int freq, BoolVar[] x) {
         super(x);
         this.freq = freq;
         this.x = x;
@@ -47,43 +43,58 @@ public class FrequentSubs extends Propagator<IntVar> {
         return new SparseBitSet(database.getNbTransactions());
     }
 
+    private SparseBitSet computeCover2(Set<Integer> presentItems, Set<Integer> freeItems, int i) {
+        SparseBitSet cover = createCover();
+        for (int j : presentItems) {
+            cover.and(dataset[j]);
+        }
+        for (int j : freeItems) {
+            if (j != i) {
+                cover.and(dataset[j]);
+            }
+        }
+        return cover;
+    }
+
+    private Set<Integer> unionSet(Set<Integer> items, int i) {
+        Set<Integer> union = new HashSet<>(items);
+        union.add(i);
+        return union;
+    }
+
     @Override
     public void propagate(int evtmask) throws ContradictionException {
         SparseBitSet cover = createCover();
         Set<Integer> presentItems = new HashSet<>();
+        Set<Integer> absentItems = new HashSet<>();
         Set<Integer> freeItems = new HashSet<>();
         for (int i = database.getNbClass(); i < database.getNbItems(); i++) {
             if (x[i].isInstantiatedTo(1)) {
-                presentItems.add(i);
                 cover.and(dataset[i]);
+                presentItems.add(i);
+            }
+            if (x[i].isInstantiatedTo(0)) {
+                absentItems.add(i);
             }
             if (!x[i].isInstantiated()) {
+                cover.and(dataset[i]);
                 freeItems.add(i);
             }
         }
-        Map<Integer, SparseBitSet> subcovers = new HashMap<>();
-        for (int i : presentItems) {
-            SparseBitSet subcover = createCover();
-            for (int j : presentItems) {
-                if (j != i) {
-                    subcover.and(dataset[j]);
+        if (cover.cardinality() >= freq) {
+            for (int j : absentItems) {
+                if (cover.andCount(dataset[j]) >= freq) {
+                    fails();
                 }
-            }
-            if (subcover.cardinality() < freq) {
-                fails();
-            }
-            subcovers.put(i, subcover);
-        }
-        if (cover.cardinality() < freq) {
-            for (int i : freeItems) {
-                x[i].setToFalse(this);
             }
         }
         for (int i : freeItems) {
-            if (cover.andCount(dataset[i]) < freq) {
-                for (int j : presentItems) {
-                    if (subcovers.get(j).andCount(dataset[i]) < freq) {
-                        x[i].setToFalse(this);
+            SparseBitSet cover2 = computeCover2(presentItems, freeItems, i);
+            if (cover2.cardinality() >= freq) {
+                Set<Integer> union = unionSet(absentItems, i);
+                for (int j : union) {
+                    if (cover2.andCount(dataset[j]) >= freq) {
+                        x[i].setToTrue(this);
                         break;
                     }
                 }

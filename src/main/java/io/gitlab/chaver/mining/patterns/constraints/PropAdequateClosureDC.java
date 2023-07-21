@@ -18,14 +18,14 @@ import org.chocosolver.solver.variables.BoolVar;
 
 import java.util.List;
 
-public class AdequateClosureDC extends AdequateClosure {
+public class PropAdequateClosureDC extends PropAdequateClosure {
 
-    public AdequateClosureDC(TransactionalDatabase database, List<Measure> measures, BoolVar[] items,
-                             IMeasureComputerFactory measureComputerFactory) {
+    public PropAdequateClosureDC(TransactionalDatabase database, List<Measure> measures, BoolVar[] items,
+                                 IMeasureComputerFactory measureComputerFactory) {
         super(database, measures, items, measureComputerFactory);
     }
 
-    public AdequateClosureDC(TransactionalDatabase database, List<Measure> measures, BoolVar[] items) {
+    public PropAdequateClosureDC(TransactionalDatabase database, List<Measure> measures, BoolVar[] items) {
         super(database, measures, items, new MeasureComputerFactory());
     }
 

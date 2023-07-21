@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class FrequentSubsTest {
+class PropFrequentSubsTest {
 
     /*@Test
     void test() throws Exception {
@@ -54,14 +54,14 @@ class FrequentSubsTest {
         int freqLB = mfi ? s : 0;
         int freqUB = mfi ? database.getNbTransactions() : (s - 1);
         IntVar freq = model.intVar("freq", freqLB, freqUB);
-        model.post(new Constraint("FrequentSubs", new FrequentSubs(database, s, x)));
-        model.post(new Constraint("InfrequentSupers", new InfrequentSupers(database, s, x)));
-        model.post(new Constraint("CoverSize", new CoverSize(database, freq, x)));
+        model.post(new Constraint("FrequentSubs", new PropFrequentSubs(database, s, x)));
+        model.post(new Constraint("InfrequentSupers", new PropInfrequentSupers(database, s, x)));
+        model.post(new Constraint("CoverSize", new PropCoverSize(database, freq, x)));
         if (mfi) {
-            model.post(new Constraint("CoverClosure", new CoverClosure(database, x)));
+            model.post(new Constraint("CoverClosure", new PropCoverClosure(database, x)));
         }
         else {
-            model.post(new Constraint("Generator", new Generator(database, x)));
+            model.post(new Constraint("Generator", new PropGenerator(database, x)));
         }
         int[] itemFreq = database.computeItemFreq();
         BoolVar[] xSorted = IntStream
@@ -95,10 +95,10 @@ class FrequentSubsTest {
         Model model = new Model("MFI");
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         int s = 3;
-        model.post(new Constraint("FrequentSubs", new FrequentSubs(database, s, x)));
-        model.post(new Constraint("InfrequentSupers", new InfrequentSupers(database, s, x)));
+        model.post(new Constraint("FrequentSubs", new PropFrequentSubs(database, s, x)));
+        model.post(new Constraint("InfrequentSupers", new PropInfrequentSupers(database, s, x)));
         IntVar freq = model.intVar("freq", s, database.getNbTransactions());
-        model.post(new Constraint("CoverSize", new CoverSize(database, freq, x)));
+        model.post(new Constraint("CoverSize", new PropCoverSize(database, freq, x)));
         Solver solver = model.getSolver();
         Set<List<Integer>> solutions = new HashSet<>();
         while (solver.solve()) {
@@ -121,10 +121,10 @@ class FrequentSubsTest {
         Model model = new Model("MII");
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         int s = 3;
-        model.post(new Constraint("FrequentSubs", new FrequentSubs(database, s, x)));
-        model.post(new Constraint("InfrequentSupers", new InfrequentSupers(database, s, x)));
+        model.post(new Constraint("FrequentSubs", new PropFrequentSubs(database, s, x)));
+        model.post(new Constraint("InfrequentSupers", new PropInfrequentSupers(database, s, x)));
         IntVar freq = model.intVar("freq", 1, s - 1);
-        model.post(new Constraint("CoverSize", new CoverSize(database, freq, x)));
+        model.post(new Constraint("CoverSize", new PropCoverSize(database, freq, x)));
         Solver solver = model.getSolver();
         Set<List<Integer>> solutions = new HashSet<>();
         while (solver.solve()) {

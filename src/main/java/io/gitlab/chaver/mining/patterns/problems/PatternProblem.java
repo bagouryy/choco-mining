@@ -14,9 +14,9 @@ import io.gitlab.chaver.chocotools.problem.ChocoProblem;
 import io.gitlab.chaver.chocotools.problem.SetUpException;
 import io.gitlab.chaver.chocotools.search.loop.monitors.SolutionRecorderMonitor;
 import io.gitlab.chaver.chocotools.util.ISolutionProvider;
-import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
-import io.gitlab.chaver.mining.patterns.constraints.FrequentSubs;
-import io.gitlab.chaver.mining.patterns.constraints.InfrequentSupers;
+import io.gitlab.chaver.mining.patterns.constraints.PropCoverSize;
+import io.gitlab.chaver.mining.patterns.constraints.PropFrequentSubs;
+import io.gitlab.chaver.mining.patterns.constraints.PropInfrequentSupers;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
@@ -320,11 +320,11 @@ public abstract class PatternProblem extends ChocoProblem<Pattern, PatternProble
 
     private void miiConstraint() {
         if (miiSearch > -1) {
-            model.post(new Constraint("FrequentSubs", new FrequentSubs(database, miiSearch, items)));
-            model.post(new Constraint("InfrequentSupers", new InfrequentSupers(database, miiSearch, items)));
+            model.post(new Constraint("FrequentSubs", new PropFrequentSubs(database, miiSearch, items)));
+            model.post(new Constraint("InfrequentSupers", new PropInfrequentSupers(database, miiSearch, items)));
             IntVar freq = measureVars.get(freq().getId());
             freq.lt(miiSearch).post();
-            model.post(new Constraint("CoverSize", new CoverSize(database, freq, items)));
+            model.post(new Constraint("CoverSize", new PropCoverSize(database, freq, items)));
         }
     }
 

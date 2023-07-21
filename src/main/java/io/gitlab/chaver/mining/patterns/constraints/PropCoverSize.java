@@ -30,7 +30,7 @@ import static io.gitlab.chaver.mining.patterns.util.BitSetFactory.*;
  * Given a set of boolean variables x and an integer variable f, ensures that f = freq(x)
  * Fore more information, see Schaus et al. - CoverSize : A global constraint for frequency-based itemset mining
  */
-public class CoverSize extends Propagator<IntVar> {
+public class PropCoverSize extends Propagator<IntVar> {
 
     private final BoolVar[] items; // x
     private final BitSetFacade cover; // cover of x
@@ -39,7 +39,7 @@ public class CoverSize extends Propagator<IntVar> {
     private final IStateInt lastIndexFree; // all items between [firstIndex, lastIndexFree[ are free
     private final int firstIndex; // min index (= nb of classes of the database)
 
-    public CoverSize(TransactionalDatabase database, IntVar freq, BoolVar[] items) {
+    public PropCoverSize(TransactionalDatabase database, IntVar freq, BoolVar[] items) {
         super(ArrayUtils.concat(items, freq));
         cover = getBitSet(ConstraintSettings.BITSET_TYPE, database, model);
         this.freq = freq;
@@ -49,7 +49,7 @@ public class CoverSize extends Propagator<IntVar> {
         this.firstIndex = database.getNbClass();
     }
 
-    public CoverSize(TransactionalDatabase database, IntVar freq, BoolVar[] items, boolean classCover) {
+    public PropCoverSize(TransactionalDatabase database, IntVar freq, BoolVar[] items, boolean classCover) {
         super(ArrayUtils.concat(items, freq));
         cover = classCover ? getBitSet1(ConstraintSettings.BITSET_TYPE, database, model) :
                 getBitSet(ConstraintSettings.BITSET_TYPE, database, model);

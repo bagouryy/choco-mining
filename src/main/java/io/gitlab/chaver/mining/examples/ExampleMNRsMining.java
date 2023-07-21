@@ -9,14 +9,11 @@
  */
 package io.gitlab.chaver.mining.examples;
 
-import io.gitlab.chaver.mining.patterns.constraints.CoverClosure;
-import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
-import io.gitlab.chaver.mining.patterns.constraints.Generator;
+import io.gitlab.chaver.mining.patterns.constraints.factory.ConstraintFactory;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.variables.BoolVar;
@@ -66,17 +63,16 @@ public class ExampleMNRsMining {
         model.addClausesBoolOrArrayEqualTrue(y);
         // Frequency of z
         IntVar freqZ = model.intVar("freqZ", minFreq, database.getNbTransactions());
-        new Constraint("frequent Z", new CoverSize(database, freqZ, z)).post();
+        ConstraintFactory.coverSize(database, freqZ, z).post();
         // Frequency of x
         IntVar freqX = model.intVar("freqX", minFreq, database.getNbTransactions());
-        new Constraint("frequent X", new CoverSize(database, freqX, x)).post();
+        ConstraintFactory.coverSize(database, freqX, x).post();
         // Confidence of the rule = freqZ / freqX (multiplied by 100 to get an integer variable)
         freqZ.mul(100).ge(freqX.mul(minConf)).post();
         // Ensures that x is a generator (i.e. it has no subset with the same frequency)
-        new Constraint("generator x", new Generator(database, x))
-                .post();
+        ConstraintFactory.generator(database, x).post();
         // Ensures that z is closed w.r.t. the frequency
-        new Constraint("closed z", new CoverClosure(database, z)).post();
+        ConstraintFactory.coverClosure(database, z).post();
         Solver solver = model.getSolver();
         // Search strategy : first, instantiate x, then y, then z
         solver.setSearch(intVarSearch(

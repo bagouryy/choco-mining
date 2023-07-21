@@ -9,12 +9,11 @@
  */
 package io.gitlab.chaver.mining.examples;
 
-import io.gitlab.chaver.mining.patterns.constraints.*;
+import io.gitlab.chaver.mining.patterns.constraints.factory.ConstraintFactory;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMax;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
@@ -32,19 +31,19 @@ public class ExampleMFIsMIIsMining {
 
     static BoolVar[] createModel(String dataPath, boolean mfi, int s) throws Exception {
         TransactionalDatabase database = new DatReader(dataPath).read();
-        Model model = new Model();
+        Model model = new Model(mfi ? "MFIs mining" : "MIIs mining");
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         int freqLB = mfi ? s : 0;
         int freqUB = mfi ? database.getNbTransactions() : (s - 1);
         IntVar freq = model.intVar("freq", freqLB, freqUB);
-        model.post(new Constraint("FrequentSubs", new FrequentSubs(database, s, x)));
-        model.post(new Constraint("InfrequentSupers", new InfrequentSupers(database, s, x)));
-        model.post(new Constraint("CoverSize", new CoverSize(database, freq, x)));
+        ConstraintFactory.frequentSubs(database, s, x).post();
+        ConstraintFactory.infrequentSupers(database, s, x).post();
+        ConstraintFactory.coverSize(database, freq, x).post();
         if (mfi) {
-            model.post(new Constraint("CoverClosure", new CoverClosure(database, x)));
+            ConstraintFactory.coverClosure(database, x).post();
         }
         else {
-            model.post(new Constraint("Generator", new Generator(database, x)));
+            ConstraintFactory.generator(database, x).post();
         }
         int[] itemFreq = database.computeItemFreq();
         BoolVar[] xSorted = IntStream

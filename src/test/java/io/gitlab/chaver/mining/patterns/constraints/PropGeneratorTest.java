@@ -23,36 +23,36 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CoverClosureTest {
+public class PropGeneratorTest {
 
     private final String resPath = "src/test/resources/";
 
-    private void testFindClosedPatterns(String dataPath, int nbExpectedClosed) throws IOException {
-        Model model = new Model("closed test");
+    private void testFindGenerators(String dataPath, int nbExpectedGenerator) throws IOException {
+        Model model = new Model("generator test");
         TransactionalDatabase database = new DatReader(dataPath, 0, true).read();
         IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         model.sum(x, "=", length).post();
-        model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
-        model.post(new Constraint("Closed", new CoverClosure(database, x)));
+        model.post(new Constraint("Cover Size", new PropCoverSize(database, freq, x)));
+        model.post(new Constraint("Generator", new PropGenerator(database, x)));
         List<Solution> sols = model.getSolver().findAllSolutions();
-        assertEquals(nbExpectedClosed, sols.size());
+        assertEquals(nbExpectedGenerator, sols.size());
     }
 
     @Test
-    public void findClosedZoo() throws IOException {
-        testFindClosedPatterns(resPath + "zoo/zoo.basenum", 4567);
+    public void findGeneratorsZoo() throws IOException {
+        testFindGenerators(resPath + "zoo/zoo.basenum", 9977);
     }
 
     @Test
-    public void findClosedIris() throws IOException {
-        testFindClosedPatterns(resPath + "iris/iris.dat", 135);
+    public void findGeneratorsIris() throws IOException {
+        testFindGenerators(resPath + "iris/iris.dat", 166);
     }
 
     @Test
-    public void findClosedGlass() throws IOException {
-        testFindClosedPatterns(resPath + "glass/glass.dat", 6732);
+    public void findGeneratorGlass() throws IOException {
+        testFindGenerators(resPath + "glass/glass.dat", 11397);
     }
 
 }

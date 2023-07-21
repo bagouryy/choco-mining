@@ -9,10 +9,10 @@
  */
 package io.gitlab.chaver.mining.patterns.problems;
 
-import io.gitlab.chaver.mining.patterns.constraints.AdequateClosureDC;
-import io.gitlab.chaver.mining.patterns.constraints.AdequateClosure;
-import io.gitlab.chaver.mining.patterns.constraints.AdequateClosureWC;
-import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
+import io.gitlab.chaver.mining.patterns.constraints.PropAdequateClosureDC;
+import io.gitlab.chaver.mining.patterns.constraints.PropAdequateClosure;
+import io.gitlab.chaver.mining.patterns.constraints.PropAdequateClosureWC;
+import io.gitlab.chaver.mining.patterns.constraints.PropCoverSize;
 import io.gitlab.chaver.mining.patterns.util.ClosedSkyTransactionGetter;
 import io.gitlab.chaver.mining.patterns.util.TransactionGetter;
 import org.chocosolver.solver.Model;
@@ -33,14 +33,14 @@ public class ClosedSky extends PatternProblem {
     @Option(names = "--wc", description = "Use weak consistency version of AdequateClosure")
     private boolean wc;
 
-    private CoverSize coverSize;
+    private PropCoverSize coverSize;
 
     @Override
     public void freqVar() {
         String freqId = freq().getId();
         IntVar freq = model.intVar(freqId, freqMin, database.getNbTransactions());
         measureVars.put(freqId, freq);
-        coverSize = new CoverSize(database, freq, items);
+        coverSize = new PropCoverSize(database, freq, items);
         new Constraint("CoverSize x", coverSize).post();
     }
 
@@ -49,7 +49,7 @@ public class ClosedSky extends PatternProblem {
         String freq1Id = freq1().getId();
         IntVar freq1 = model.intVar(freq1Id, 0, database.getNbTransactions());
         measureVars.put(freq1Id, freq1);
-        new Constraint("Freq 1", new CoverSize(database, freq1, items, true)).post();
+        new Constraint("Freq 1", new PropCoverSize(database, freq1, items, true)).post();
     }
 
     @Override
@@ -57,11 +57,11 @@ public class ClosedSky extends PatternProblem {
         model.post(new Constraint("AdequateClosure", getAdequateClosurePropagator()));
     }
 
-    private AdequateClosure getAdequateClosurePropagator() {
+    private PropAdequateClosure getAdequateClosurePropagator() {
         if (wc) {
-            return new AdequateClosureWC(database, closedMeasures, items);
+            return new PropAdequateClosureWC(database, closedMeasures, items);
         }
-        return new AdequateClosureDC(database, closedMeasures, items);
+        return new PropAdequateClosureDC(database, closedMeasures, items);
     }
 
     @Override

@@ -14,9 +14,9 @@ import io.gitlab.chaver.chocotools.io.ProblemResult;
 import io.gitlab.chaver.chocotools.io.ProblemResultReader;
 import io.gitlab.chaver.chocotools.problem.ChocoProblem;
 import io.gitlab.chaver.chocotools.problem.SetUpException;
-import io.gitlab.chaver.mining.patterns.constraints.CoverClosure;
-import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
-import io.gitlab.chaver.mining.patterns.constraints.Generator;
+import io.gitlab.chaver.mining.patterns.constraints.PropCoverClosure;
+import io.gitlab.chaver.mining.patterns.constraints.PropCoverSize;
+import io.gitlab.chaver.mining.patterns.constraints.PropGenerator;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
@@ -218,16 +218,16 @@ public class AssociationRuleMining extends ChocoProblem<AssociationRule, ArMeasu
         model.addClausesBoolOrArrayEqualTrue(x);
         model.addClausesBoolOrArrayEqualTrue(y);
         IntVar freqZ = model.intVar("freqZ", minFreq, database.getNbTransactions());
-        new Constraint("frequent Z", new CoverSize(database, freqZ, z)).post();
+        new Constraint("frequent Z", new PropCoverSize(database, freqZ, z)).post();
         IntVar freqX = model.intVar("freqX", minFreq, database.getNbTransactions());
-        new Constraint("frequent X", new CoverSize(database, freqX, x)).post();
+        new Constraint("frequent X", new PropCoverSize(database, freqX, x)).post();
         if (minConf > 0) freqZ.mul(10000).ge(freqX.mul((int) Math.round(minConf * 10000))).post();
         IntVar freqY = model.intVar("freqY", minFreq, database.getNbTransactions());
-        new Constraint("frequent Y", new CoverSize(database, freqY, y)).post();
+        new Constraint("frequent Y", new PropCoverSize(database, freqY, y)).post();
         if (ruleType.equals(RuleType.mnr)) {
-            new Constraint("generator x", new Generator(database, x))
+            new Constraint("generator x", new PropGenerator(database, x))
                     .post();
-            new Constraint("closed z", new CoverClosure(database, z)).post();
+            new Constraint("closed z", new PropCoverClosure(database, z)).post();
         }
         BoolVar[] skyVars = skypatternConstraint(y, z);
         BoolVar[] heuristicVars = ArrayUtils.append(skyVars, x, y, z);

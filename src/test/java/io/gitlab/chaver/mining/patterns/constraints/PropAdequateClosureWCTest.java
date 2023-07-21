@@ -15,10 +15,10 @@ import org.chocosolver.solver.variables.BoolVar;
 
 import java.util.List;
 
-public class AdequateClosureWCTest extends AdequateClosureTest {
+public class PropAdequateClosureWCTest extends PropAdequateClosureTest {
 
     @Override
-    protected AdequateClosure getAdequateClosure(TransactionalDatabase database, List<Measure> measures, BoolVar[] x) {
-        return new AdequateClosureWC(database, measures, x);
+    protected PropAdequateClosure getAdequateClosure(TransactionalDatabase database, List<Measure> measures, BoolVar[] x) {
+        return new PropAdequateClosureWC(database, measures, x);
     }
 }

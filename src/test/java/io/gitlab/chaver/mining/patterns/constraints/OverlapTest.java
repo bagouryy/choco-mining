@@ -37,8 +37,8 @@ class OverlapTest {
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         model.sum(x, "=", length).post();
-        model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
-        model.post(new Constraint("Cover Closure", new CoverClosure(database, x)));
+        model.post(new Constraint("Cover Size", new PropCoverSize(database, freq, x)));
+        model.post(new Constraint("Cover Closure", new PropCoverClosure(database, x)));
         double jmax = 0.05;
         Overlap overlap = new Overlap(database, x, 0.05, theta);
         model.post(new Constraint("Overlap", overlap));

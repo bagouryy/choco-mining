@@ -9,13 +9,12 @@
  */
 package io.gitlab.chaver.mining.examples;
 
-import io.gitlab.chaver.mining.patterns.constraints.CoverClosure;
-import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
+
+import io.gitlab.chaver.mining.patterns.constraints.factory.ConstraintFactory;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 import org.chocosolver.solver.Model;
-import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -23,6 +22,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
+
 
 /**
  * Example of closed pattern mining (a closed pattern is an itemset which has no superset with the same frequency)
@@ -43,9 +43,9 @@ public class ExampleClosedItemsetMining {
         // Ensures that length = sum(x)
         model.sum(x, "=", length).post();
         // Ensures that freq = frequency(x)
-        model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+        ConstraintFactory.coverSize(database, freq, x).post();
         // Ensures that x is a closed itemset
-        model.post(new Constraint("Cover Closure", new CoverClosure(database, x)));
+        ConstraintFactory.coverClosure(database, x).post();
         // Create a list to store all the closed itemsets
         List<Pattern> closedPatterns = new LinkedList<>();
         while (model.getSolver().solve()) {

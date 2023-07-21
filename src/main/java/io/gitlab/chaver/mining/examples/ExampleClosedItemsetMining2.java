@@ -9,14 +9,12 @@
  */
 package io.gitlab.chaver.mining.examples;
 
-import io.gitlab.chaver.mining.patterns.constraints.AdequateClosureDC;
-import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
+import io.gitlab.chaver.mining.patterns.constraints.factory.ConstraintFactory;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
 import org.chocosolver.solver.Model;
-import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -54,12 +52,12 @@ public class ExampleClosedItemsetMining2 {
         IntVar maxFreq = model.intVar(maxFreq().getId(), 0, database.getNbTransactions());
         // Compute max value of itemFreqVar
         model.max(maxFreq, itemFreqVar).post();
-        model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+        ConstraintFactory.coverSize(database, freq, x).post();
         // The constraint AdequateClosure ensures that x is closed w.r.t. M
         // Two versions are available : Domain Consistency (DC) and Weak Consistency (WC)
         // Note that the WC version is more time efficient than the DC one
         List<Measure> measures = Arrays.asList(freq(), maxFreq());
-        model.post(new Constraint("Adequate Closure", new AdequateClosureDC(database, measures, x)));
+        ConstraintFactory.adequateClosure(database, measures, x, true).post();
         List<Pattern> closedPatterns = new LinkedList<>();
         while (model.getSolver().solve()) {
             int[] itemset = IntStream.range(0, x.length)

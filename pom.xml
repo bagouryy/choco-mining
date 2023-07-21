@@ -155,6 +155,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.3.2</version>
+                <configuration>
+                    <!-- Other Javadoc configurations -->
+                    <links>
+                        <link>https://javadoc.io/doc/org.choco-solver/choco-solver/4.10.13/org.chocosolver.solver</link>
+                        <!-- Add other external Javadoc URLs here -->
+                    </links>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>

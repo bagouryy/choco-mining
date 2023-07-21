@@ -31,7 +31,7 @@ import static io.gitlab.chaver.mining.patterns.util.PatternUtil.readPatternStrea
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CoverSizeTest {
+public class PropCoverSizeTest {
 
     private final String resourcesPath = "src/test/resources/";
 
@@ -45,7 +45,7 @@ public class CoverSizeTest {
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         model.sum(x, "=", length).post();
-        model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+        model.post(new Constraint("Cover Size", new PropCoverSize(database, freq, x)));
         List<Solution> sols = model.getSolver().findAllSolutions();
         assertEquals(filteredExpected.size(), sols.size());
         for (Solution sol : sols) {

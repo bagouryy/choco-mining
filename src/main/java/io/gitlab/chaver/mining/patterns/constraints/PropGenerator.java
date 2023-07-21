@@ -32,7 +32,7 @@ import static io.gitlab.chaver.mining.patterns.util.BitSetFactory.getBitSet;
  * (i.e. there exists no item i \in x such that freq(x \ {i}) = freq(x))
  * Fore more information, see Belaid et al. - Constraint programming for association rules
  */
-public class Generator extends Propagator<BoolVar> {
+public class PropGenerator extends Propagator<BoolVar> {
 
     private final BoolVar[] items;
     private final TransactionalDatabase database;
@@ -45,7 +45,7 @@ public class Generator extends Propagator<BoolVar> {
     private final IStateInt lastIndexPresent;
     private final int firstIndex;
 
-    public Generator(TransactionalDatabase database, BoolVar[] items) {
+    public PropGenerator(TransactionalDatabase database, BoolVar[] items) {
         super(items);
         this.items = items;
         this.database = database;

@@ -9,13 +9,11 @@
  */
 package io.gitlab.chaver.mining.examples;
 
-import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
-import io.gitlab.chaver.mining.patterns.constraints.Generator;
+import io.gitlab.chaver.mining.patterns.constraints.factory.ConstraintFactory;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 import org.chocosolver.solver.Model;
-import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -36,9 +34,9 @@ public class ExampleGeneratorMining {
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         model.sum(x, "=", length).post();
-        model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+        ConstraintFactory.coverSize(database, freq, x).post();
         // Ensures that x is a generator
-        model.post(new Constraint("Generator", new Generator(database, x)));
+        ConstraintFactory.generator(database, x).post();
         List<Pattern> generators = new LinkedList<>();
         while (model.getSolver().solve()) {
             int[] itemset = IntStream.range(0, x.length)

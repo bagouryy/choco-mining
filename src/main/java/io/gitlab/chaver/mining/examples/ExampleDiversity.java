@@ -9,9 +9,8 @@
  */
 package io.gitlab.chaver.mining.examples;
 
-import io.gitlab.chaver.mining.patterns.constraints.CoverClosure;
-import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
 import io.gitlab.chaver.mining.patterns.constraints.Overlap;
+import io.gitlab.chaver.mining.patterns.constraints.factory.ConstraintFactory;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
@@ -40,8 +39,8 @@ public class ExampleDiversity {
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         model.sum(x, "=", length).post();
-        model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
-        model.post(new Constraint("Cover Closure", new CoverClosure(database, x)));
+        ConstraintFactory.coverSize(database, freq, x).post();
+        ConstraintFactory.coverClosure(database, x).post();
         double jmax = 0.05;
         // Overlap is a global constraint that ensures that x is a diverse itemset
         // i.e. there exists no y such that jaccard(x,y) > jmax

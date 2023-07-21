@@ -9,8 +9,8 @@
  */
 package io.gitlab.chaver.mining.examples;
 
-import io.gitlab.chaver.mining.patterns.constraints.AdequateClosureWC;
-import io.gitlab.chaver.mining.patterns.constraints.CoverSize;
+import io.gitlab.chaver.mining.patterns.constraints.PropAdequateClosureWC;
+import io.gitlab.chaver.mining.patterns.constraints.PropCoverSize;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
@@ -63,9 +63,9 @@ public class ExampleSkypatternMining {
         // Aconf is the frequency of x divided by the maximum frequency of its items
         // Aconf is converted to an integer variable (multiplied by 10000)
         IntVar aconf = freq.mul(10000).div(maxFreq).intVar();
-        model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+        model.post(new Constraint("Cover Size", new PropCoverSize(database, freq, x)));
         // Ensures that x is closed w.r.t. M'
-        model.post(new Constraint("Adequate Closure", new AdequateClosureWC(database, new ArrayList<>(M_prime), x)));
+        model.post(new Constraint("Adequate Closure", new PropAdequateClosureWC(database, new ArrayList<>(M_prime), x)));
         // We want to Pareto maximize {freq(x), area(x), aconf(x)}
         IntVar[] objectives = new IntVar[]{freq, area, aconf};
         ParetoMaximizer maximizer = new ParetoMaximizer(objectives);

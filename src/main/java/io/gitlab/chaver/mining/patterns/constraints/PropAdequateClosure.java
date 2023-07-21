@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
  * Given a database D and a set of preserving measures M', the AdequateClosure constraint ensures
  * that x+ is a closed pattern w.r.t. M'
  */
-public abstract class AdequateClosure extends Propagator<BoolVar> {
+public abstract class PropAdequateClosure extends Propagator<BoolVar> {
 
     private final BoolVar[] items;
     private final TransactionalDatabase database;
@@ -41,8 +41,8 @@ public abstract class AdequateClosure extends Propagator<BoolVar> {
     private int nFree;
     private int nAbs;
 
-    public AdequateClosure(TransactionalDatabase database, List<Measure> measures, BoolVar[] items,
-                           IMeasureComputerFactory measureComputerFactory) {
+    public PropAdequateClosure(TransactionalDatabase database, List<Measure> measures, BoolVar[] items,
+                               IMeasureComputerFactory measureComputerFactory) {
         super(items);
         this.items = items;
         this.database = database;
