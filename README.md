@@ -2,52 +2,11 @@
 
 Choco-Mining is a Java library for solving itemset mining problems that is based on [Choco-solver](https://github.com/chocoteam/choco-solver), which was utilized in the experiments of [VernereyLAL22]. Choco-solver is an open-source Java library designed for Constraint Programming (CP). One of the key benefits of utilizing CP in itemset mining problems is the flexibility it provides to add custom constraints to the problem without requiring modifications to the underlying system.
 
-## Quick start example
-
-In this example, we want to extract all the closed itemsets (i.e. the ones that have no superset with the same frequency) with a minimum frequency of 1 and a minimum length of 1.
-
-```java
-// Read the transactional database
-TransactionalDatabase database = new DatReader("data/contextPasquier99.dat").read();
-// Create the Choco model
-Model model = new Model("Closed Itemset Mining");
-// Array of Boolean variables where x[i] == 1 represents the fact that i belongs to the itemset
-BoolVar[] x = model.boolVarArray("x", database.getNbItems());
-// Integer variable that represents the frequency of x with the bounds [1, nbTransactions]
-IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
-// Integer variable that represents the length of x with the bounds [1, nbItems]
-IntVar length = model.intVar("length", 1, database.getNbItems());
-// Ensures that length = sum(x)
-model.sum(x, "=", length).post();
-// Ensures that freq = frequency(x)
-model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
-// Ensures that x is a closed itemset
-model.post(new Constraint("Cover Closure", new CoverClosure(database, x)));
-// Create a list to store all the closed itemsets
-List<Pattern> closedPatterns = new LinkedList<>();
-while (model.getSolver().solve()) {
-    int[] itemset = IntStream.range(0, x.length)
-            .filter(i -> x[i].getValue() == 1)
-            .map(i -> database.getItems()[i])
-            .toArray();
-    // Add the closed itemset with its frequency to the list
-    closedPatterns.add(new Pattern(itemset, new int[]{freq.getValue()}));
-}
-System.out.println("List of closed itemsets for the dataset contextPasquier99 w.r.t. freq(x):");
-// Print all the closed itemsets with their frequency
-for (Pattern closed : closedPatterns) {
-    System.out.println(Arrays.toString(closed.getItems()) +
-            ", freq=" + closed.getMeasures()[0]);
-}
-```
-
-
-
 ## Architecture of the library
 
 ![Summary of constraints implemented with Choco-mining \label{fig:app}](paper/app.svg)
 
-The following constraints are available in Choco-Mining:
+The above figure illustrates the architecture of Choco-Mining library. Multiple task examples(in blue) are linked to the constraints(in red) that can be used to perform them. The following constraints are available in the library:
 
 - `CoverSize(x,f)` [SchausAG17]: Given an integer variable `f` that represents the frequency (noted `freq`) of an itemset `x`, the constraint ensures that `f = freq(x)`.
 - `CoverClosure(x)` [SchausAG17]: The constraint ensures that `x` is closed w.r.t. the frequency, i.e. there exists no superset `y` of `x` such that `freq(x) = freq(y)`.
@@ -57,7 +16,7 @@ The following constraints are available in Choco-Mining:
 - `Generator(x)` [BelaidBL19]: The constraint ensures that `x` is a generator, i.e. there exists no subset `y` of `x` such that `freq(y) = freq(x)`.
 - `ClosedDiversity(H,j,s,x)` [HienLALLOZ20]: Given a history of itemsets `H`, a diversity threshold `j` and a minimum frequency threshold `s`, the constraint ensures that `x` is a diverse itemset (i.e. there exists no itemset `y` in `H` such that  `jaccard(x,y) >= j`), `x` is closed w.r.t. the frequency and `freq(x) >= s`.
 
-We can model different problems using these constraints. The above figure shows examples of mining tasks (in blue) with the constraints (in red) involved in their modelling:
+Example of tasks that can be performed using these constraints include:
 
 - Frequent Itemset Mining: Given a threshold `s`, find all the itemsets `x` such that `freq(x) >= s`.
 - Closed Itemset Mining: Given a threshold `s`, find all the itemsets `x` such that `freq(x) >= s` and that are closed w.r.t. the frequency.
@@ -86,11 +45,86 @@ After that, [create a new Maven project](https://maven.apache.org/guides/getting
 </dependency>
 ```
 
-That's it ! You can now use all the constraints in your project.
+That's it ! You can now use all the available constraints in your project.
 
-## Usage examples
+## Illustrative example
 
-Examples on how to use the available constraints can be found in the [Wiki](https://gitlab.com/chaver/data-mining/-/wikis/home).
+In itemset mining, we are working on *Transactional databases*. Consider the example of the transactional database in the file `data/contextPasquier99.dat`:
+
+```
+1 3 4
+2 3 5
+1 2 3 5
+2 5
+1 2 3 5
+```
+
+In this example, we have 5 items in the set `I = {1,2,3,4,5}`. Each row of the file represents a transaction(a transaction is a subset of `I`). The first transaction contains the items `{1,3,4}`, the second the items `{2,3,5}`, etc... The frequency of an itemset is the number of times it appears in the database. For example, the itemset `{1,3,5}` has a frequency of `2` since it appears in the 3th and 5th row of the database. 
+
+Using this database, we want to extract all the closed itemsets w.r.t. the frequency that have a frequency `>= 1`. We say that an itemset `x` is closed w.r.t. the frequency if it has no superset `y` with the same frequency. For example, `{3}` is a closed itemset w.r.t. the frequency but `{1}` is not since `freq({1}) = freq({1,3}) = 3`.
+
+Using our library, we can model the closed itemset mining task in the following way:
+
+```java
+// Read the transactional database
+TransactionalDatabase database = new DatReader("data/contextPasquier99.dat").read();
+// Create the Choco model
+Model model = new Model("Closed Itemset Mining");
+// Array of Boolean variables where x[i] == 1 represents the fact that i belongs to the itemset
+BoolVar[] x = model.boolVarArray("x", database.getNbItems());
+// Integer variable that represents the frequency of x with the bounds [1, nbTransactions]
+IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
+// Integer variable that represents the length of x with the bounds [1, nbItems]
+IntVar length = model.intVar("length", 1, database.getNbItems());
+// Ensures that length = sum(x)
+model.sum(x, "=", length).post();
+// Ensures that freq = frequency(x)
+ConstraintFactory.coverSize(database, freq, x).post();
+// Ensures that x is a closed itemset
+ConstraintFactory.coverClosure(database, x).post();
+Solver solver = model.getSolver();
+// Variable heuristic : select item i such that freq(x U i) is minimal
+// Value heuristic : instantiate it first to 0
+solver.setSearch(Search.intVarSearch(
+        new MinCov(model, database),
+        new IntDomainMin(),
+        x
+));
+// Create a list to store all the closed itemsets
+List<Pattern> closedPatterns = new LinkedList<>();
+while (solver.solve()) {
+    int[] itemset = IntStream.range(0, x.length)
+            .filter(i -> x[i].getValue() == 1)
+            .map(i -> database.getItems()[i])
+            .toArray();
+    // Add the closed itemset with its frequency to the list
+    closedPatterns.add(new Pattern(itemset, new int[]{freq.getValue()}));
+}
+System.out.println("List of closed itemsets for the dataset contextPasquier99 w.r.t. freq(x):");
+// Print all the closed itemsets with their frequency
+for (Pattern closed : closedPatterns) {
+    System.out.println(Arrays.toString(closed.getItems()) +
+            ", freq=" + closed.getMeasures()[0]);
+}
+```
+
+After running this bloc of code, we get the following message in the console:
+
+```
+List of closed itemsets for the dataset contextPasquier99 w.r.t. freq(x):
+[3], freq=4
+[2, 3, 5], freq=3
+[2, 5], freq=4
+[1, 3], freq=3
+[1, 3, 4], freq=1
+[1, 2, 3, 5], freq=2
+```
+
+We have 6 closed itemsets w.r.t. the frequency in the dataset `contextPasquier99`.
+
+## Documentation
+
+Examples on how to use the available constraints to perform different tasks can be found in the [Wiki](https://gitlab.com/chaver/data-mining/-/wikis/home). The Javadoc is available [here](https://chaver.gitlab.io/data-mining/).
 
 ## Support
 
