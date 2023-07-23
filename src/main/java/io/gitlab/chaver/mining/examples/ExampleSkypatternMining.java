@@ -9,8 +9,7 @@
  */
 package io.gitlab.chaver.mining.examples;
 
-import io.gitlab.chaver.mining.patterns.constraints.PropAdequateClosureWC;
-import io.gitlab.chaver.mining.patterns.constraints.PropCoverSize;
+import io.gitlab.chaver.mining.patterns.constraints.factory.ConstraintFactory;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
@@ -41,7 +40,7 @@ public class ExampleSkypatternMining {
 
     public static void main(String[] args) throws Exception {
         TransactionalDatabase database = new DatReader("data/contextPasquier99.dat").read();
-        Model model = new Model("skypattern mining");
+        Model model = new Model("Skypattern Mining");
         List<Measure> M = Arrays.asList(freq(), area(), allConf());
         // Compute M' such that M is maximally M-skylineable (see Ugarte et al.)
         Set<Measure> M_prime = MeasureOperand.maxConvert(M);
@@ -63,9 +62,9 @@ public class ExampleSkypatternMining {
         // Aconf is the frequency of x divided by the maximum frequency of its items
         // Aconf is converted to an integer variable (multiplied by 10000)
         IntVar aconf = freq.mul(10000).div(maxFreq).intVar();
-        model.post(new Constraint("Cover Size", new PropCoverSize(database, freq, x)));
+        ConstraintFactory.coverSize(database, freq, x).post();
         // Ensures that x is closed w.r.t. M'
-        model.post(new Constraint("Adequate Closure", new PropAdequateClosureWC(database, new ArrayList<>(M_prime), x)));
+        ConstraintFactory.adequateClosure(database, new ArrayList<>(M_prime), x, false).post();
         // We want to Pareto maximize {freq(x), area(x), aconf(x)}
         IntVar[] objectives = new IntVar[]{freq, area, aconf};
         ParetoMaximizer maximizer = new ParetoMaximizer(objectives);

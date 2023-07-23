@@ -43,7 +43,7 @@ public class ExampleDiversity {
         ConstraintFactory.coverClosure(database, x).post();
         double jmax = 0.05;
         // Overlap is a global constraint that ensures that x is a diverse itemset
-        // i.e. there exists no y such that jaccard(x,y) > jmax
+        // i.e. there exists no y in the history such that jaccard(x,y) > jmax
         Overlap overlap = new Overlap(database, x, jmax, theta);
         model.post(new Constraint("Overlap", overlap));
         Solver solver = model.getSolver();

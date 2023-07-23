@@ -14,7 +14,11 @@ import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import io.gitlab.chaver.mining.patterns.io.Pattern;
 import io.gitlab.chaver.mining.patterns.measure.Measure;
+import io.gitlab.chaver.mining.patterns.search.strategy.selectors.variables.MinCov;
 import org.chocosolver.solver.Model;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.search.strategy.Search;
+import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -33,6 +37,8 @@ public class ExampleClosedItemsetMining2 {
     public static void main(String[] args) throws Exception {
         // Read the transactional database
         TransactionalDatabase database = new DatReader("data/contextPasquier99.dat").read();
+        // List of measures to be closed
+        List<Measure> measures = Arrays.asList(freq(), maxFreq());
         // Create the Choco model
         Model model = new Model("Closed Itemset Mining with multiple measures");
         // Create the variables
@@ -56,10 +62,17 @@ public class ExampleClosedItemsetMining2 {
         // The constraint AdequateClosure ensures that x is closed w.r.t. M
         // Two versions are available : Domain Consistency (DC) and Weak Consistency (WC)
         // Note that the WC version is more time efficient than the DC one
-        List<Measure> measures = Arrays.asList(freq(), maxFreq());
         ConstraintFactory.adequateClosure(database, measures, x, true).post();
+        Solver solver = model.getSolver();
+        // Variable heuristic : select item i such that freq(x U i) is minimal
+        // Value heuristic : instantiate it first to 0
+        solver.setSearch(Search.intVarSearch(
+                new MinCov(model, database),
+                new IntDomainMin(),
+                x
+        ));
         List<Pattern> closedPatterns = new LinkedList<>();
-        while (model.getSolver().solve()) {
+        while (solver.solve()) {
             int[] itemset = IntStream.range(0, x.length)
                     .filter(i -> x[i].getValue() == 1)
                     .map(i -> database.getItems()[i])

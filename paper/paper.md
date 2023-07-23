@@ -73,24 +73,31 @@ We give below an example of CP encoding for the Closed Itemset Mining problem us
 TransactionalDatabase database = new DatReader("data/contextPasquier99.dat").read();
 // Create the Choco model
 Model model = new Model("Closed Itemset Mining");
-/* Array of Boolean variables where x[i] == 1 represents the fact 
-that i belongs to the itemset */
+/* Array of Boolean variables where x[i] == 1 represents
+the fact that i belongs to the itemset */
 BoolVar[] x = model.boolVarArray("x", database.getNbItems());
 /* Integer variable that represents the frequency of x 
 with the bounds [1, nbTransactions] */
 IntVar freq = model.intVar("freq", 1, database.getNbTransactions());
-/* Integer variable that represents the length of x 
-with the bounds [1, nbItems] */
+// Integer variable that represents the length of x with the bounds [1, nbItems]
 IntVar length = model.intVar("length", 1, database.getNbItems());
 // Ensures that length = sum(x)
 model.sum(x, "=", length).post();
 // Ensures that freq = frequency(x)
-model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)));
+ConstraintFactory.coverSize(database, freq, x).post();
 // Ensures that x is a closed itemset
-model.post(new Constraint("Cover Closure", new CoverClosure(database, x)));
+ConstraintFactory.coverClosure(database, x).post();
+Solver solver = model.getSolver();
+// Variable heuristic : select item i such that freq(x U i) is minimal
+// Value heuristic : instantiate it first to 0
+solver.setSearch(Search.intVarSearch(
+        new MinCov(model, database),
+        new IntDomainMin(),
+        x
+));
 // Create a list to store all the closed itemsets
 List<Pattern> closedPatterns = new LinkedList<>();
-while (model.getSolver().solve()) {
+while (solver.solve()) {
     int[] itemset = IntStream.range(0, x.length)
             .filter(i -> x[i].getValue() == 1)
             .map(i -> database.getItems()[i])
@@ -109,8 +116,8 @@ for (Pattern closed : closedPatterns) {
 The goal is to find all the closed itemsets with a minimum frequency of 1. We start by reading the transactional database using the method `read()` of the `DatReader` instance. Then, we create a model with Choco-solver. Variables `freq` and `length` are created to store respectively the frequency and the length of the itemset. A boolean array of variables `x` represents the itemset, where `x[i] = 1` indicates that item `i` belongs to the itemset. Finally, we post three constraints:
 
 - `model.sum(x, "=", length).post()`: ensures that $length = \sum x$.
-- `model.post(new Constraint("Cover Size", new CoverSize(database, freq, x)))`: ensures that $freq = freq(x)$.
-- `model.post(new Constraint("Cover Closure", new CoverClosure(database, x)))`: ensures that $x$ is closed w.r.t. the frequency.
+- `ConstraintFactory.coverSize(database, freq, x).post()`: ensures that $freq = freq(x)$.
+- `ConstraintFactory.coverClosure(database, x).post()`: ensures that $x$ is closed w.r.t. the frequency.
 
 After finding all the solutions, we print them to the user.
 

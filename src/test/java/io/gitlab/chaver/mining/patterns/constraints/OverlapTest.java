@@ -28,20 +28,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OverlapTest {
 
-    @Test
-    void test() throws Exception {
-        TransactionalDatabase database = new DatReader("src/test/resources/iris/iris.dat").read();
+    Overlap createOverlap(String dataPath, boolean addConstraint, double jmax, int theta) throws Exception {
+        TransactionalDatabase database = new DatReader(dataPath).read();
         Model model = new Model("Diversity");
-        int theta = (int) Math.round(database.getNbTransactions() * 0.01d);
         IntVar freq = model.intVar("freq", theta, database.getNbTransactions());
         IntVar length = model.intVar("length", 1, database.getNbItems());
         BoolVar[] x = model.boolVarArray("x", database.getNbItems());
         model.sum(x, "=", length).post();
         model.post(new Constraint("Cover Size", new PropCoverSize(database, freq, x)));
         model.post(new Constraint("Cover Closure", new PropCoverClosure(database, x)));
-        double jmax = 0.05;
         Overlap overlap = new Overlap(database, x, 0.05, theta);
-        model.post(new Constraint("Overlap", overlap));
+        if (addConstraint) model.post(new Constraint("Overlap", overlap));
         Solver solver = model.getSolver();
         solver.plugMonitor(overlap);
         solver.setSearch(Search.intVarSearch(
@@ -49,7 +46,38 @@ class OverlapTest {
                 new IntDomainMin(),
                 x
         ));
-        while (solver.solve());
+        return overlap;
+    }
+
+    @Test
+    void test() throws Exception {
+        double jmax = 0.05;
+        int theta = 15;
+        Overlap overlap = createOverlap("src/test/resources/iris/iris.dat", true, jmax, theta);
+        while (overlap.getModel().getSolver().solve());
+        List<BitSet> covers = overlap.getCoversHistory();
+        for (BitSet cover : covers) {
+            for (BitSet cover2 : covers) {
+                if (!cover.equals(cover2)) {
+                    double jaccard = Overlap.computeJaccard(cover, cover2);
+                    assertTrue(jaccard <= jmax);
+                }
+            }
+        }
+    }
+
+    @Test
+    void test2() throws Exception {
+        double jmax = 0.1;
+        int theta = 5;
+        String dataPath = "src/test/resources/glass/glass.dat";
+        Overlap overlap = createOverlap(dataPath, true, jmax, theta);
+        while (overlap.getModel().getSolver().solve());
+        //overlap.getModel().getSolver().printStatistics();
+        Overlap overlap1 = createOverlap(dataPath, false, jmax, theta);
+        while (overlap1.getModel().getSolver().solve());
+        //overlap1.getModel().getSolver().printStatistics();
+        assertTrue(overlap.getCoversHistory().equals(overlap1.getCoversHistory()));
         List<BitSet> covers = overlap.getCoversHistory();
         for (BitSet cover : covers) {
             for (BitSet cover2 : covers) {

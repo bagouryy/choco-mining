@@ -113,11 +113,11 @@ After running this bloc of code, we get the following message in the console:
 ```
 List of closed itemsets for the dataset contextPasquier99 w.r.t. freq(x):
 [3], freq=4
-[2, 3, 5], freq=3
 [2, 5], freq=4
+[2, 3, 5], freq=3
 [1, 3], freq=3
-[1, 3, 4], freq=1
 [1, 2, 3, 5], freq=2
+[1, 3, 4], freq=1
 ```
 
 We have 6 closed itemsets w.r.t. the frequency in the dataset `contextPasquier99`.

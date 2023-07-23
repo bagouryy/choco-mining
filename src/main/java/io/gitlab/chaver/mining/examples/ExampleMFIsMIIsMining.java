@@ -25,7 +25,9 @@ import java.util.Comparator;
 import java.util.stream.IntStream;
 
 /**
- * Example of MFI/MII mining (from paper Belaid et al. - Contraint Programming for Mining Borders of Frequent Itemsets)
+ * Example of MFIs/MIIs mining
+ * (From Belaid et al. - Contraint Programming for Mining Borders of Frequent Itemsets)
+ * , figure 1
  */
 public class ExampleMFIsMIIsMining {
 
