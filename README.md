@@ -59,7 +59,7 @@ In itemset mining, we are working on *Transactional databases*. Consider the exa
 1 2 3 5
 ```
 
-In this example, we have 5 items in the set `I = {1,2,3,4,5}`. Each row of the file represents a transaction(a transaction is a subset of `I`). The first transaction contains the items `{1,3,4}`, the second the items `{2,3,5}`, etc... The frequency of an itemset is the number of times it appears in the database. For example, the itemset `{1,3,5}` has a frequency of `2` since it appears in the 3th and 5th row of the database. 
+In this example, we have 5 items denoted by `I = {1,2,3,4,5}`. Each row of the file represents a transaction(a transaction is a subset of `I`). The first transaction contains the items `{1,3,4}`, the second the items `{2,3,5}`, etc... An itemset (or pattern) is a subset of `I`. The frequency of an itemset is the number of transactions in which it appears in the database. For example, the itemset `{1,3,5}` has a frequency of `2` since it appears in the 3th and 5th row of the database. 
 
 Using this database, we want to extract all the closed itemsets w.r.t. the frequency that have a frequency `>= 1`. We say that an itemset `x` is closed w.r.t. the frequency if it has no superset `y` with the same frequency. For example, `{3}` is a closed itemset w.r.t. the frequency but `{1}` is not since `freq({1}) = freq({1,3}) = 3`.
 
