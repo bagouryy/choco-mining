@@ -1,6 +1,6 @@
 # Choco-Mining: A Java library for Itemset Mining with Choco Solver
 
-Choco-Mining is a Java library for solving itemset mining problems that is based on [Choco-solver](https://github.com/chocoteam/choco-solver), which was utilized in the experiments of [VernereyLAL22]. Choco-solver is an open-source Java library designed for Constraint Programming (CP). One of the key benefits of utilizing CP in itemset mining problems is the flexibility it provides to add custom constraints to the problem without requiring modifications to the underlying system.
+Choco-Mining is a Java library for solving itemset mining problems that is based on [Choco-solver](https://github.com/chocoteam/choco-solver). Choco-solver is an open-source Java library designed for Constraint Programming (CP). One of the key benefits of using CP in pattern mining is the flexibility it provides to add custom constraints to the problem without requiring modifications to the underlying system. [Seq2Pat](https://github.com/fidelity/seq2pat) [KadiogluWHH23] is another example of library relevant for declarative (sequential) pattern mining based on CP.
 
 ## Architecture of the library
 
@@ -59,7 +59,7 @@ In itemset mining, we are working on *Transactional databases*. Consider the exa
 1 2 3 5
 ```
 
-In this example, we have 5 items denoted by `I = {1,2,3,4,5}`. Each row of the file represents a transaction(a transaction is a subset of `I`). The first transaction contains the items `{1,3,4}`, the second the items `{2,3,5}`, etc... An itemset (or pattern) is a subset of `I`. The frequency of an itemset is the number of transactions in which it appears in the database. For example, the itemset `{1,3,5}` has a frequency of `2` since it appears in the 3th and 5th row of the database. 
+In this example, we have 5 items denoted by `I = {1,2,3,4,5}`. Each row of the file represents a transaction (a transaction is a subset of `I`). The first transaction contains the items `{1,3,4}`, the second the items `{2,3,5}`, etc... An itemset (or pattern) is a subset of `I`. The frequency of an itemset is the number of transactions in which it appears in the database. For example, the itemset `{1,3,5}` has a frequency of `2` since it appears in the 3rd and 5th rows of the database. 
 
 Using this database, we want to extract all the closed itemsets w.r.t. the frequency that have a frequency `>= 1`. We say that an itemset `x` is closed w.r.t. the frequency if it has no superset `y` with the same frequency. For example, `{3}` is a closed itemset w.r.t. the frequency but `{1}` is not since `freq({1}) = freq({1,3}) = 3`.
 
@@ -141,3 +141,4 @@ Choco-Mining is licensed under the [MIT License](https://gitlab.com/chaver/data-
 - **[Belaid2BL19]** [Belaid, M. B., Bessiere, C., & Lazaar, N. (2019, August). Constraint programming for mining borders of frequent itemsets. In *IJCAI 2019-28th International Joint Conference on Artificial Intelligence* (pp. 1064-1070).](https://hal-lirmm.ccsd.cnrs.fr/lirmm-02310629/)
 - **[BelaidBL19]** [Belaid, M. B., Bessiere, C., & Lazaar, N. (2019, May). Constraint programming for association rules. In *Proceedings of the 2019 SIAM International Conference on Data Mining* (pp. 127-135). Society for Industrial and Applied Mathematics.](https://epubs.siam.org/doi/abs/10.1137/1.9781611975673.15)
 - **[HienLALLOZ20]** [Hien, A., Loudni, S., Aribi, N., Lebbah, Y., Laghzaoui, M. E. A., Ouali, A., & Zimmermann, A. (2021). A relaxation-based approach for mining diverse closed patterns. In *Machine Learning and Knowledge Discovery in Databases: European Conference, ECML PKDD 2020, Ghent, Belgium, September 14–18, 2020, Proceedings, Part I* (pp. 36-54). Springer International Publishing.](https://link.springer.com/chapter/10.1007/978-3-030-67658-2_3)
+- **[KadiogluWHH23]** [Kadioglu, S., Wang, X., Hosseininasab, A., & van Hoeve, W. J. (2023). Seq2Pat: Sequence‐to‐pattern generation to bridge pattern mining with machine learning. AI Magazine.](https://doi.org/10.1002/aaai.12081)
