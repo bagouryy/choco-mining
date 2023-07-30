@@ -2,51 +2,6 @@
 
 Choco-Mining is a Java library for solving itemset mining problems that is based on [Choco-solver](https://github.com/chocoteam/choco-solver). Choco-solver is an open-source Java library designed for Constraint Programming (CP). One of the key benefits of using CP in pattern mining is the flexibility it provides to add custom constraints to the problem without requiring modifications to the underlying system. [Seq2Pat](https://github.com/fidelity/seq2pat) [KadiogluWHH23] is another example of library relevant for declarative (sequential) pattern mining based on CP.
 
-## Architecture of the library
-
-![Summary of constraints implemented with Choco-mining \label{fig:app}](paper/app.svg)
-
-The above figure illustrates the architecture of Choco-Mining library. Multiple task examples(in blue) are linked to the constraints(in red) that can be used to perform them. The following constraints are available in the library:
-
-- `CoverSize(x,f)` [SchausAG17]: Given an integer variable `f` that represents the frequency (noted `freq`) of an itemset `x`, the constraint ensures that `f = freq(x)`.
-- `CoverClosure(x)` [SchausAG17]: The constraint ensures that `x` is closed w.r.t. the frequency, i.e. there exists no superset `y` of `x` such that `freq(x) = freq(y)`.
-- `AdequateClosure(M,x)` [VernereyLAL22]: Given a set of measures `M`, the constraint ensures that `x` is closed w.r.t. `M`, i.e. there exists no superset `y` of `x` such that for each measure `m` in `M`, we have `m(x) = m(y)`.
-- `FrequentSubs(s,x)` [Belaid2BL19]: Given a frequency threshold `s`, the constraint ensures that each subset `y` of `x` is frequent, i.e. `freq(y) >= s`.
-- `InfrequentSupers(s,x)` [Belaid2BL19]: Given a frequency threshold `s`, the constraint ensures that each superset `y` of `x` is infrequent, i.e. `freq(y) <= s`.
-- `Generator(x)` [BelaidBL19]: The constraint ensures that `x` is a generator, i.e. there exists no subset `y` of `x` such that `freq(y) = freq(x)`.
-- `ClosedDiversity(H,j,s,x)` [HienLALLOZ20]: Given a history of itemsets `H`, a diversity threshold `j` and a minimum frequency threshold `s`, the constraint ensures that `x` is a diverse itemset (i.e. there exists no itemset `y` in `H` such that  `jaccard(x,y) >= j`), `x` is closed w.r.t. the frequency and `freq(x) >= s`.
-
-Example of tasks that can be performed using these constraints include:
-
-- Frequent Itemset Mining: Given a threshold `s`, find all the itemsets `x` such that `freq(x) >= s`.
-- Closed Itemset Mining: Given a threshold `s`, find all the itemsets `x` such that `freq(x) >= s` and that are closed w.r.t. the frequency.
-- Skypattern Mining: Given a set of measures `M`, find all the itemsets `x` such that there exists no other itemset `y` that dominates `x`. We say that `y` dominates `x` iff for each measure `m` in `M` we have `m(y) >= m(y)` and there exists at least one measure `m` in `M` such that `m(y) > m(x)`.
-- Maximal Frequent Itemset Mining: Given a threshold `s`, find all the itemsets `x` such that `freq(x) >= s` and for each superset `y` of `x` we have `freq(y) < s`.
-- Minimal Infrequent Itemset Mining: Given a threshold `s`, find all the itemsets `x` such that `freq(x) < s` and for each subset `y` of `x` we have `freq(y) >= s`.
-- Generator Mining: Find all the itemsets `x` that are generators.
-- Association Rule Mining: Find all the association rules `x => y` that respect the constraints specified by the user.
-- Diverse Itemset Mining: Given a diversity threshold `j` and a minimum frequency threshold `s`, find all the diverse itemsets that are closed w.r.t. the frequency and such that `freq(x) >= s`.
-
-## Installation
-
-To use the Choco-mining library, you need to have Java 8+ and [Maven 3](https://maven.apache.org/) installed on your computer. Then, you can simply install the library with the following command:
-
-```bash
-make install
-```
-
-After that, [create a new Maven project](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html) and add a new dependency in the pom.xml file:
-
-```xml
-<dependency>
-    <groupId>io.gitlab.chaver</groupId>
-    <artifactId>data-mining</artifactId>
-    <version>1.0.2</version>
-</dependency>
-```
-
-That's it ! You can now use all the available constraints in your project.
-
 ## Illustrative example
 
 In itemset mining, we are working on *Transactional databases*. Consider the example of the transactional database in the file `data/contextPasquier99.dat`:
@@ -63,7 +18,7 @@ In this example, we have 5 items denoted by `I = {1,2,3,4,5}`. Each row of the f
 
 Using this database, we want to extract all the closed itemsets w.r.t. the frequency that have a frequency `>= 1`. We say that an itemset `x` is closed w.r.t. the frequency if it has no superset `y` with the same frequency. For example, `{3}` is a closed itemset w.r.t. the frequency but `{1}` is not since `freq({1}) = freq({1,3}) = 3`.
 
-Using our library, we can model the closed itemset mining task in the following way:
+Using our library, we can model the closed itemset mining task in the [following way](https://gitlab.com/chaver/data-mining/-/blob/master/src/main/java/io/gitlab/chaver/mining/examples/ExampleClosedItemsetMining.java):
 
 ```java
 // Read the transactional database
@@ -121,6 +76,51 @@ List of closed itemsets for the dataset contextPasquier99 w.r.t. freq(x):
 ```
 
 We have 6 closed itemsets w.r.t. the frequency in the dataset `contextPasquier99`.
+
+## Architecture of the library
+
+![Summary of constraints implemented with Choco-mining \label{fig:app}](paper/app.svg)
+
+The above figure illustrates the architecture of Choco-Mining library. Multiple task examples(in blue) are linked to the constraints(in red) that can be used to perform them. The following constraints are available in the library:
+
+- `CoverSize(x,f)` [SchausAG17]: Given an integer variable `f` that represents the frequency (noted `freq`) of an itemset `x`, the constraint ensures that `f = freq(x)`.
+- `CoverClosure(x)` [SchausAG17]: The constraint ensures that `x` is closed w.r.t. the frequency, i.e. there exists no superset `y` of `x` such that `freq(x) = freq(y)`.
+- `AdequateClosure(M,x)` [VernereyLAL22]: Given a set of measures `M`, the constraint ensures that `x` is closed w.r.t. `M`, i.e. there exists no superset `y` of `x` such that for each measure `m` in `M`, we have `m(x) = m(y)`.
+- `FrequentSubs(s,x)` [Belaid2BL19]: Given a frequency threshold `s`, the constraint ensures that each subset `y` of `x` is frequent, i.e. `freq(y) >= s`.
+- `InfrequentSupers(s,x)` [Belaid2BL19]: Given a frequency threshold `s`, the constraint ensures that each superset `y` of `x` is infrequent, i.e. `freq(y) <= s`.
+- `Generator(x)` [BelaidBL19]: The constraint ensures that `x` is a generator, i.e. there exists no subset `y` of `x` such that `freq(y) = freq(x)`.
+- `ClosedDiversity(H,j,s,x)` [HienLALLOZ20]: Given a history of itemsets `H`, a diversity threshold `j` and a minimum frequency threshold `s`, the constraint ensures that `x` is a diverse itemset (i.e. there exists no itemset `y` in `H` such that  `jaccard(x,y) >= j`), `x` is closed w.r.t. the frequency and `freq(x) >= s`.
+
+Example of tasks that can be performed using these constraints include:
+
+- Frequent Itemset Mining: Given a threshold `s`, find all the itemsets `x` such that `freq(x) >= s`.
+- Closed Itemset Mining: Given a threshold `s`, find all the itemsets `x` such that `freq(x) >= s` and that are closed w.r.t. the frequency.
+- Skypattern Mining: Given a set of measures `M`, find all the itemsets `x` such that there exists no other itemset `y` that dominates `x`. We say that `y` dominates `x` iff for each measure `m` in `M` we have `m(y) >= m(y)` and there exists at least one measure `m` in `M` such that `m(y) > m(x)`.
+- Maximal Frequent Itemset Mining: Given a threshold `s`, find all the itemsets `x` such that `freq(x) >= s` and for each superset `y` of `x` we have `freq(y) < s`.
+- Minimal Infrequent Itemset Mining: Given a threshold `s`, find all the itemsets `x` such that `freq(x) < s` and for each subset `y` of `x` we have `freq(y) >= s`.
+- Generator Mining: Find all the itemsets `x` that are generators.
+- Association Rule Mining: Find all the association rules `x => y` that respect the constraints specified by the user.
+- Diverse Itemset Mining: Given a diversity threshold `j` and a minimum frequency threshold `s`, find all the diverse itemsets that are closed w.r.t. the frequency and such that `freq(x) >= s`.
+
+## Installation
+
+To use the Choco-mining library, you need to have Java 8+ and [Maven 3](https://maven.apache.org/) installed on your computer. Then, you can simply install the library with the following command:
+
+```bash
+make install
+```
+
+After that, [create a new Maven project](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html) and add a new dependency in the pom.xml file:
+
+```xml
+<dependency>
+    <groupId>io.gitlab.chaver</groupId>
+    <artifactId>data-mining</artifactId>
+    <version>1.0.2</version>
+</dependency>
+```
+
+That's it ! You can now use all the available constraints in your project.
 
 ## Documentation
 
