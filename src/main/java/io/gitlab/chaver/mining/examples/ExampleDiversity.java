@@ -15,7 +15,6 @@ import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
@@ -44,10 +43,10 @@ public class ExampleDiversity {
         double jmax = 0.05;
         // Overlap is a global constraint that ensures that x is a diverse itemset
         // i.e. there exists no y in the history such that jaccard(x,y) > jmax
-        Overlap overlap = new Overlap(database, x, jmax, theta);
-        model.post(new Constraint("Overlap", overlap));
+        // Each time a new itemset x is found, we add it to the history if it is a diverse itemset
+        Overlap overlap = ConstraintFactory.overlap(database, x, jmax, theta);
+        overlap.post();
         Solver solver = model.getSolver();
-        solver.plugMonitor(overlap);
         solver.setSearch(Search.intVarSearch(
                 new InputOrder<>(model),
                 new IntDomainMin(),

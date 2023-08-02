@@ -101,4 +101,19 @@ public class ConstraintFactory {
     public static Constraint generator(TransactionalDatabase database, BoolVar[] items) {
         return new Constraint("Generator", new PropGenerator(database, items));
     }
+
+    /**
+     * Given a transactional database, an array of Boolean variables that represents
+     * the itemset x, a diversity threshold jmax and a frequency threshold theta, ensures that x is a diverse itemset,
+     * i.e. there exists no itemset y in the history H such that jaccard(x,y) &gt; jmax.
+     * Each time a new itemset is found, it is added to the history H if it is a diverse itemset.
+     * @param database Transactional database
+     * @param items Array of Boolean variables where items[i] == 1 indicates that i belongs to the itemset x
+     * @param jmax Diversity threshold
+     * @param theta Frequency threshold
+     * @return the Overlap constraint
+     */
+    public static Overlap overlap(TransactionalDatabase database, BoolVar[] items, double jmax, int theta) {
+        return new Overlap(database, items, jmax, theta);
+    }
 }

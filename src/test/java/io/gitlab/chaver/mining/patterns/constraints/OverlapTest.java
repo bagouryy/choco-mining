@@ -9,6 +9,7 @@
  */
 package io.gitlab.chaver.mining.patterns.constraints;
 
+import io.gitlab.chaver.mining.patterns.constraints.factory.ConstraintFactory;
 import io.gitlab.chaver.mining.patterns.io.DatReader;
 import io.gitlab.chaver.mining.patterns.io.TransactionalDatabase;
 import org.chocosolver.solver.Model;
@@ -37,10 +38,12 @@ class OverlapTest {
         model.sum(x, "=", length).post();
         model.post(new Constraint("Cover Size", new PropCoverSize(database, freq, x)));
         model.post(new Constraint("Cover Closure", new PropCoverClosure(database, x)));
-        Overlap overlap = new Overlap(database, x, 0.05, theta);
-        if (addConstraint) model.post(new Constraint("Overlap", overlap));
+        Overlap overlap = ConstraintFactory.overlap(database, x, jmax, theta);
+        overlap.post();
+        if (!addConstraint) {
+            overlap.getPropagator(0).setEnabled(false);
+        }
         Solver solver = model.getSolver();
-        solver.plugMonitor(overlap);
         solver.setSearch(Search.intVarSearch(
                 new InputOrder<>(model),
                 new IntDomainMin(),
@@ -54,7 +57,7 @@ class OverlapTest {
         double jmax = 0.05;
         int theta = 15;
         Overlap overlap = createOverlap("src/test/resources/iris/iris.dat", true, jmax, theta);
-        while (overlap.getModel().getSolver().solve());
+        while (overlap.getPropagator(0).getModel().getSolver().solve());
         List<BitSet> covers = overlap.getCoversHistory();
         for (BitSet cover : covers) {
             for (BitSet cover2 : covers) {
@@ -68,15 +71,15 @@ class OverlapTest {
 
     @Test
     void test2() throws Exception {
-        double jmax = 0.1;
+        double jmax = 0.05;
         int theta = 5;
         String dataPath = "src/test/resources/glass/glass.dat";
         Overlap overlap = createOverlap(dataPath, true, jmax, theta);
-        while (overlap.getModel().getSolver().solve());
-        //overlap.getModel().getSolver().printStatistics();
+        while (overlap.getPropagator(0).getModel().getSolver().solve());
+        //overlap.getPropagator(0).getModel().getSolver().printStatistics();
         Overlap overlap1 = createOverlap(dataPath, false, jmax, theta);
-        while (overlap1.getModel().getSolver().solve());
-        //overlap1.getModel().getSolver().printStatistics();
+        while (overlap1.getPropagator(0).getModel().getSolver().solve());
+        //overlap1.getPropagator(0).getModel().getSolver().printStatistics();
         assertTrue(overlap.getCoversHistory().equals(overlap1.getCoversHistory()));
         List<BitSet> covers = overlap.getCoversHistory();
         for (BitSet cover : covers) {
