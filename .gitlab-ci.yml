@@ -17,7 +17,7 @@ deploy:
   script:
     - mvn javadoc:javadoc # Generate Javadoc using Maven plugin
     - mkdir public
-    - cp -r target/site/apidocs public/javadoc
+    - cp -r target/site/apidocs/* public/
   artifacts:
     paths:
       - public
