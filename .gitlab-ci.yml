@@ -3,6 +3,7 @@ image: maven:latest
 # Define the stages that the jobs will run in
 stages:
   - test
+  - build
   - deploy
 
 # Maven test job
@@ -11,12 +12,17 @@ test:
   script:
     - mvn test
 
+build:
+  stage: build
+  script:
+    - mvn javadoc:javadoc # Generate Javadoc using Maven plugin
+
 # GitLab Pages deployment job
-pages:
+deploy:
   stage: deploy
   script:
     - mkdir public
-    - cp -r apidocs/* public/
+    - cp -r target/apidocs/* public/javadoc
   artifacts:
     paths:
       - public
