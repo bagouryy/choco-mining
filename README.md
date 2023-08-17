@@ -128,11 +128,11 @@ Examples on how to use the available constraints to perform different tasks can 
 
 ## Support
 
-Please submit bug reports, questions and feature requests as [Issues](https://gitlab.com/chaver/data-mining/-/issues).
+Please submit bug reports, questions and feature requests as [Issues](https://gitlab.com/chaver/choco-mining/-/issues).
 
 ## License
 
-Choco-Mining is licensed under the [MIT License](https://gitlab.com/chaver/data-mining/-/blob/master/LICENSE.txt).
+Choco-Mining is licensed under the [MIT License](https://gitlab.com/chaver/choco-mining/-/blob/master/LICENSE.txt).
 
 ## References
 
