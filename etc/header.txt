@@ -1,4 +1,4 @@
-This file is part of ${project} (https://gitlab.com/chaver/data-mining)
+This file is part of ${project} (https://gitlab.com/chaver/choco-mining)
 
 Copyright (c) ${year}, ${owner}
 

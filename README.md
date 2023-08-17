@@ -115,7 +115,7 @@ After that, [create a new Maven project](https://maven.apache.org/guides/getting
 ```xml
 <dependency>
     <groupId>io.gitlab.chaver</groupId>
-    <artifactId>data-mining</artifactId>
+    <artifactId>choco-mining</artifactId>
     <version>1.0.2</version>
 </dependency>
 ```
@@ -124,7 +124,7 @@ That's it ! You can now use all the available constraints in your project.
 
 ## Documentation
 
-Examples on how to use the available constraints to perform different tasks can be found in the [Wiki](https://gitlab.com/chaver/data-mining/-/wikis/home). The Javadoc is available [here](https://chaver.gitlab.io/data-mining/).
+Examples on how to use the available constraints to perform different tasks can be found in the [Wiki](https://gitlab.com/chaver/choco-mining/-/wikis/home). The Javadoc is available [here](https://chaver.gitlab.io/choco-mining/).
 
 ## Support
 

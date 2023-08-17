@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
+    This file is part of io.gitlab.chaver:choco-mining (https://gitlab.com/chaver/choco-mining)
 
     Copyright (c) 2023, IMT Atlantique
 
@@ -16,7 +16,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.gitlab.chaver</groupId>
-    <artifactId>data-mining</artifactId>
+    <artifactId>choco-mining</artifactId>
     <version>1.0.2</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>

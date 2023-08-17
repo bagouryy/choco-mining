@@ -1,5 +1,5 @@
 /*
- * This file is part of io.gitlab.chaver:data-mining (https://gitlab.com/chaver/data-mining)
+ * This file is part of io.gitlab.chaver:choco-mining (https://gitlab.com/chaver/choco-mining)
  *
  * Copyright (c) 2023, IMT Atlantique
  *
