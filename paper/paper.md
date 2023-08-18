@@ -1,5 +1,5 @@
 ---
-title: 'A Java Library for Itemset Mining with Choco Solver'
+title: 'A Java Library for Itemset Mining with Choco-solver'
 tags:
   - Java
   - Constraint Programming

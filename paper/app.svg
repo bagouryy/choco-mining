@@ -7,13 +7,13 @@
 <g id="node1" class="node">
 <title>choco</title>
 <ellipse fill="none" stroke="#000000" cx="631.1884" cy="-396.4156" rx="62.0225" ry="18"/>
-<text text-anchor="middle" x="631.1884" y="-392.2156" font-family="Times,serif" font-size="14.00" fill="#000000">Choco solver</text>
+<text text-anchor="middle" x="631.1884" y="-392.2156" font-family="Times,serif" font-size="14.00" fill="#000000">Choco-solver</text>
 </g>
 <!-- mining -->
 <g id="node2" class="node">
 <title>mining</title>
 <ellipse fill="none" stroke="#000000" cx="466.8996" cy="-369.4156" rx="66.056" ry="18"/>
-<text text-anchor="middle" x="466.8996" y="-365.2156" font-family="Times,serif" font-size="14.00" fill="#000000">Choco mining</text>
+<text text-anchor="middle" x="466.8996" y="-365.2156" font-family="Times,serif" font-size="14.00" fill="#000000">Choco-Mining</text>
 </g>
 <!-- mining&#45;&gt;choco -->
 <g id="edge1" class="edge">
