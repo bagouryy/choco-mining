@@ -18,7 +18,7 @@ In this example, we have 5 items denoted by `I = {1,2,3,4,5}`. Each row of the f
 
 Using this database, we want to extract all the closed itemsets w.r.t. the frequency that have a frequency `>= 1`. We say that an itemset `x` is closed w.r.t. the frequency if it has no superset `y` with the same frequency. For example, `{3}` is a closed itemset w.r.t. the frequency but `{1}` is not since `freq({1}) = freq({1,3}) = 3`.
 
-Using our library, we can model the closed itemset mining task in the [following way](https://gitlab.com/chaver/data-mining/-/blob/master/src/main/java/io/gitlab/chaver/mining/examples/ExampleClosedItemsetMining.java):
+Using our library, we can model the closed itemset mining task in the [following way](https://gitlab.com/chaver/choco-mining/-/blob/master/src/main/java/io/gitlab/chaver/mining/examples/ExampleClosedItemsetMining.java):
 
 ```java
 // Read the transactional database
@@ -133,6 +133,26 @@ Please submit bug reports, questions and feature requests as [Issues](https://gi
 ## License
 
 Choco-Mining is licensed under the [MIT License](https://gitlab.com/chaver/choco-mining/-/blob/master/LICENSE.txt).
+
+## Citation
+
+If you use Choco-Mining in a publication, please cite it as:
+
+```bibtex
+@article{vernerey2023java,
+  title={A Java Library for Itemset Mining with Choco-solver},
+  author={Vernerey, Charles and Loudni, Samir},
+  journal={Journal of Open Source Software},
+  volume={8},
+  number={88},
+  pages={5654},
+  year={2023}
+}
+```
+
+## Acknowledgements
+
+We would like to thank Noureddine Aribi, Yahia Lebbah and Mohamed-Bachir Belaid for all the valuable discussions on the global constraints implemented in Choco-Mining.
 
 ## References
 
