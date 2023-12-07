@@ -152,7 +152,7 @@ If you use Choco-Mining in a publication, please cite it as:
 
 ## Acknowledgements
 
-We would like to thank Noureddine Aribi, Yahia Lebbah and Mohamed-Bachir Belaid for all the valuable discussions on the global constraints implemented in Choco-Mining.
+We would like to thank Noureddine Aribi, Yahia Lebbah, Mohamed-Bachir Belaid and Nadjib Lazaar for all the valuable discussions on the global constraints implemented in Choco-Mining.
 
 ## References
 
