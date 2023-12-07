@@ -1,5 +1,5 @@
 # The Docker image that will be used to build your app
-image: maven:latest
+image: maven:3.9.5-sapmachine-17
 # Functions that should be executed before the build script is run
 before_script: []
 pages:
